@@ -11,3 +11,65 @@ datasource db {
   directUrl         = env("POSTGRES_URL_NON_POOLING")
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
+
+
+model User {
+  // Unique identifier for the user
+  id String @id @default(cuid())
+
+  // Name of the user
+  name String
+
+  // Email address, must be unique if provided
+  email String @unique
+
+  // Timestamp for when the user's email is verified
+  emailVerified DateTime?
+
+  // URL for the user's image
+  image String
+
+  // Timestamp of account creation, defaults to the current time
+  createdAt DateTime @default(now())
+
+  // Timestamp of the last update, automatically set on update
+  updatedAt DateTime @updatedAt
+
+  // A list of 'Account' records linked to this user (one-to-many relationship)
+  accounts Account[]
+}
+
+model Account {
+  // Unique identifier for the account
+  id String @id @default(cuid())
+
+  // Type of the account
+  type String
+
+  // Name of the service provider (e.g., Google, Facebook)
+  provider String
+
+  // Account ID from the provider's system
+  providerAccountId String
+
+  // Optional fields for OAuth tokens and related informations
+  refresh_token            String?
+  refresh_token_expires_in Int?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  oauth_token_secret       String?
+  oauth_token              String?
+
+  // User to which this account belongs. If the user is deleted, this account will also be deleted.
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  // Ensures that each combination of provider and providerAccountId is unique
+  @@unique([provider, providerAccountId])
+  // An index for better query performance on userId
+  @@index([userId])
+}
