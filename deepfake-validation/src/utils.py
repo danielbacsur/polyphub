@@ -97,7 +97,7 @@ def test():
     face_detector = DlibFaceDetector()
 
     # file = download_video()
-    frames, frame_rate = extract_frames(f"{get_current_path()}/../../data/test.mp4")
+    frames, frame_rate = extract_frames(f"{get_current_path()}/../data/test.mp4")
     print(f"Extracted {len(frames)} frames with frame rate {frame_rate}")
 
     noise_levels = []
@@ -136,5 +136,57 @@ def test():
 
     plt.show()
 
+def check_frame_consistency(frames: List[np.ndarray], frame_rate: int, threshold: int = 20) -> List[List[float]]:
+    alerts = []
+    prev_frame = cv2.cvtColor(frames[0], cv2.COLOR_BGR2GRAY)
+    for idx, frame in tqdm.tqdm(enumerate(frames[1:]), total=len(frames) - 1, leave=False):
+        curr_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
+        # Calculate frame difference
+        frame_diff = cv2.absdiff(curr_frame, prev_frame)
+
+        # Check if frame difference is above threshold
+        if np.mean(frame_diff) > threshold:
+            alerts.append([idx / frame_rate, np.mean(frame_diff)])
+
+        prev_frame = curr_frame
+
+    return alerts
+
+def check_face_consistency(frames: List[np.ndarray], frame_rate: int) -> List[List[float]]:
+    face_detector = DlibFaceDetector()
+
+    alerts = []
+    for idx, frame in tqdm.tqdm(enumerate(frames), total=len(frames), leave=False):
+        faces = face_detector.detect_faces(frame)
+        if len(faces) != 1:
+            alerts.append([idx / frame_rate, len(faces)])
+    
+    return alerts
+    
+def check_authenticity(file_path: str):
+    # Check frame-to-frame consistency
+    frames, frame_rate = extract_frames(file_path)
+    print(f"Extracted {len(frames)} frames with frame rate {frame_rate}")
+
+    # Check for frame inconsistencies
+    frame_inconsistencies = check_frame_consistency(frames, frame_rate)
+    if len(frame_inconsistencies) > 0:
+        print("❗ Found frame inconsistencies")
+        print(frame_inconsistencies)
+    else:
+        print("✅ No frame inconsistencies found")
+
+    # Check for face inconsistencies
+    face_inconsistencies = check_face_consistency(frames, frame_rate)
+    if len(face_inconsistencies) > 0:
+        print("❗ Found face inconsistencies")
+        print(face_inconsistencies)
+    else:
+        print("✅ No face inconsistencies found")
+
 if __name__ == "__main__":
-    test()
+    filename = input("Enter filename: ")
+    if filename == '':
+        filename = "invalid.mov"
+    check_authenticity(f"{get_current_path()}/../data/{filename}")

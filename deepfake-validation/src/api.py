@@ -17,17 +17,19 @@ def analyze_video(url: str) -> int:
     if len(face_counts) == 0:
         return {"error": "No faces found"}
 
-    return {"max_faces": max(set(face_counts), key=face_counts.count)}
+    return {"face_counts": max(set(face_counts), key=face_counts.count)}
 
 @app.route('/validate', methods=['POST'])
 def validate():
     url = request.json['url']
 
     if not url:
-        return jsonify({'error': 'No url provided'}), 400
+        return jsonify({'error': 'no-url'}), 400
 
     analysis = analyze_video(url)
+    
     print(analysis)
+
     return analysis
 
 if __name__ == '__main__':
