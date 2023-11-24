@@ -72,8 +72,8 @@ def high_pass_filter(image: np.ndarray) -> np.ndarray:
 def test():
     face_detector = DlibFaceDetector()
 
-    file = download_video()
-    frames, frame_rate = extract_frames(file)
+    # file = download_video()
+    frames, frame_rate = extract_frames(f"{__file__}/../../data/test.mp4")
     print(f"Extracted {len(frames)} frames with frame rate {frame_rate}")
 
     noise_levels = []
@@ -85,6 +85,8 @@ def test():
 
         if len(faces) == 0:
             print("No faces found")
+            noise_levels.append(0)
+            # landmarks.append(np.zeros((68, 2)))
         elif len(faces) > 1:
             print("More than one face found")
         else:
@@ -96,12 +98,22 @@ def test():
             kps_max = np.max(lms, axis=0) + 20
             cropped_image = grayscale[kps_min[1]:kps_max[1], kps_min[0]:kps_max[0]]
 
+            cv2.imshow("cropped", cropped_image)
+            cv2.waitKey(1)
+
             high_pass = high_pass_filter(cropped_image)
             
             noise_levels.append(np.std(high_pass))
             landmarks.append(lms)
 
-    plt.plot(noise_levels)
+    # plt.plot(noise_levels)
+    landmarks = np.array(landmarks)
+    for lm in range(68):
+        lm_x_offset = landmarks[1:, lm, 0] - landmarks[:-1, lm, 0]
+        lm_y_offset = landmarks[1:, lm, 1] - landmarks[:-1, lm, 1]
+        plt.plot(lm_x_offset, label=f"lm_x_{lm}")
+        plt.plot(lm_y_offset, label=f"lm_y_{lm}")
+
     plt.show()
 
 if __name__ == "__main__":
