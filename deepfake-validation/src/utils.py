@@ -77,6 +77,7 @@ def test():
     print(f"Extracted {len(frames)} frames with frame rate {frame_rate}")
 
     noise_levels = []
+    landmarks = []
     for frame in tqdm.tqdm(frames):
         grayscale = convert_frame_grayscale(frame)
     
@@ -87,17 +88,18 @@ def test():
         elif len(faces) > 1:
             print("More than one face found")
         else:
-            landmarks = face_detector.detect_landmarks(grayscale, faces[0])
-            # image_center = np.mean(landmarks, axis=0)
+            lms = face_detector.detect_landmarks(grayscale, faces[0])
+            # image_center = np.mean(lms, axis=0)
             # image_center = image_center.astype(int)
             # image_center = tuple(image_center)
-            kps_min = np.min(landmarks, axis=0) - 20
-            kps_max = np.max(landmarks, axis=0) + 20
+            kps_min = np.min(lms, axis=0) - 20
+            kps_max = np.max(lms, axis=0) + 20
             cropped_image = grayscale[kps_min[1]:kps_max[1], kps_min[0]:kps_max[0]]
 
             high_pass = high_pass_filter(cropped_image)
             
             noise_levels.append(np.std(high_pass))
+            landmarks.append(lms)
 
     plt.plot(noise_levels)
     plt.show()
