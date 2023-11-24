@@ -49,41 +49,40 @@ def analyze_video(url: str) -> int:
         blink_error_type = "too-many-blinks"
     else:
         print("[✅] No blink inconsistencies found")
-        blink_frames = []
     
     print("Blinks:", len(blink_frames))
 
-    return jsonify([
-        {
-            "type": "frame_rate",
-            "count": frame_rate,
-            "frames": len(frames),
-        },
-        {
-            "type": "frame_inconsistencies",
-            "count": len(frame_inconsistencies),
-            "frames": frame_inconsistencies,
-        },
-        {
-            "type": "face_inconsistencies",
-            "count": len(face_inconsistencies),
-            "frames": face_inconsistencies,
-        },
-        {
-            "type": "brightness_contrast_inconsistencies",
-            "count": len(brightness_contrast_inconsistencies),
-            "frames": brightness_contrast_inconsistencies,
-        },
-        {
-            "type": "blinks",
-            "count": len(blink_frames),
-            "frames": blink_frames,
-        },
-        {
-            "type": "blink_error_type",
-            "value": blink_error_type
-        }
-    ])
+    return jsonify([{
+        "tags": [
+            {
+                "id": 0,
+                "type": "frame_inconsistencies",
+                "count": len(frame_inconsistencies),
+                "frames": frame_inconsistencies,
+            },
+            {
+                "id": 1,
+                "type": "face_inconsistencies",
+                "count": len(face_inconsistencies),
+                "frames": face_inconsistencies,
+            },
+            {
+                "id": 2,
+                "type": "brightness_contrast_inconsistencies",
+                "count": len(brightness_contrast_inconsistencies),
+                "frames": brightness_contrast_inconsistencies,
+            },
+            {
+                "id": 3,
+                "type": "blinks",
+                "count": len(blink_frames),
+                "frames": blink_frames,
+            },
+        ],
+        "frame_rate": frame_rate,
+        "frame_count": len(frames),
+        "blinks_info": blink_error_type
+    }])
 
 
 @app.route('/validate', methods=['POST'])
@@ -93,7 +92,7 @@ def validate():
     if not url:
         return jsonify({'error': 'no-url'}), 400
 
-    analysis = analyze_video(url)
+    analysis = analyze_video(url)[0]
     
     print(analysis)
 
