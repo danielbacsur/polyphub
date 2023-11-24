@@ -136,6 +136,8 @@ def test():
 
     plt.show()
 
+# Consistency checks
+
 def check_frame_consistency(frames: List[np.ndarray], frame_rate: int, threshold: int = 20) -> List[List[float]]:
     alerts = []
     prev_frame = cv2.cvtColor(frames[0], cv2.COLOR_BGR2GRAY)
@@ -153,9 +155,7 @@ def check_frame_consistency(frames: List[np.ndarray], frame_rate: int, threshold
 
     return alerts
 
-def check_face_consistency(frames: List[np.ndarray], frame_rate: int) -> List[List[float]]:
-    face_detector = DlibFaceDetector()
-
+def check_face_consistency(frames: List[np.ndarray], frame_rate: int, face_detector: DlibFaceDetector) -> List[List[float]]:
     alerts = []
     for idx, frame in tqdm.tqdm(enumerate(frames), total=len(frames), leave=False):
         faces = face_detector.detect_faces(frame)
@@ -164,9 +164,91 @@ def check_face_consistency(frames: List[np.ndarray], frame_rate: int) -> List[Li
     
     return alerts
     
+def calculate_brightness_contrast(frame):
+    # Convert to grayscale
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    
+    # Calculate brightness (mean) and contrast (standard deviation)
+    brightness = np.mean(gray_frame)
+    contrast = np.std(gray_frame)
+    
+    return brightness, contrast
+
+def check_brightness_contrast_consistency(frames: List[np.ndarray], frame_rate: int, brightness_threshold: float = 10.0, contrast_threshold: float = 5.0) -> List[List[float]]:
+    alerts = []
+    
+    prev_brightness, prev_contrast = calculate_brightness_contrast(frames[0])
+    
+    for idx, frame in tqdm.tqdm(enumerate(frames[1:]), total=len(frames) - 1, leave=False):
+        brightness, contrast = calculate_brightness_contrast(frame)
+        
+        # Check if brightness or contrast difference is above the threshold
+        if abs(brightness - prev_brightness) > brightness_threshold or abs(contrast - prev_contrast) > contrast_threshold:
+            alerts.append([idx / frame_rate, brightness, contrast])
+
+        prev_brightness, prev_contrast = brightness, contrast
+
+    return alerts
+
+def eye_aspect_ratio(eye):
+    # Compute the distances between the two sets of vertical eye landmarks (x, y)-coordinates
+    A = np.linalg.norm(eye[1] - eye[5])
+    B = np.linalg.norm(eye[2] - eye[4])
+
+    # Compute the distance between the horizontal eye landmark (x, y)-coordinates
+    C = np.linalg.norm(eye[0] - eye[3])
+
+    # Compute the eye aspect ratio
+    ear = (A + B) / (2.0 * C)
+
+    return ear
+
+def detect_blinks(frames: List[np.ndarray], frame_rate: int, face_detector: DlibFaceDetector, ear_threshold: float = 0.3, consecutive_frames: int = 3) -> List[int]:
+    blink_frames = []
+    blink_counter = 0
+    frame_counter = 0
+
+    for frame in tqdm.tqdm(frames, total=len(frames), leave=False):
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_detector.detect_faces(gray)
+
+        for face in faces:
+            landmarks = face_detector.detect_landmarks(gray, face)
+
+            # Extract the left and right eye coordinates
+            leftEye = landmarks[42:48]
+            rightEye = landmarks[36:42]
+
+            # Calculate the EAR for both eyes
+            leftEAR = eye_aspect_ratio(leftEye)
+            rightEAR = eye_aspect_ratio(rightEye)
+
+            # Average the EAR
+            ear = (leftEAR + rightEAR) / 2.0
+
+            # Check if EAR is below the blink threshold
+            if ear < ear_threshold:
+                blink_counter += 1
+            else:
+                # If the eyes were closed for a sufficient number of frames, then increment the total number of blinks
+                if blink_counter >= consecutive_frames:
+                    blink_frames.append(frame_counter / frame_rate)
+
+                blink_counter = 0
+
+        frame_counter += 1
+
+    return blink_frames
+
 def check_authenticity(file_path: str):
+    face_detector = DlibFaceDetector()
+
     # Check frame-to-frame consistency
     frames, frame_rate = extract_frames(file_path)
+    if len(frames) == 0:
+        print("❗ No frames found")
+        return
+    
     print(f"Extracted {len(frames)} frames with frame rate {frame_rate}")
 
     # Check for frame inconsistencies
@@ -177,13 +259,32 @@ def check_authenticity(file_path: str):
     else:
         print("✅ No frame inconsistencies found")
 
-    # Check for face inconsistencies
-    face_inconsistencies = check_face_consistency(frames, frame_rate)
+    # Check for face count inconsistencies
+    face_inconsistencies = check_face_consistency(frames, frame_rate, face_detector)
     if len(face_inconsistencies) > 0:
         print("❗ Found face inconsistencies")
         print(face_inconsistencies)
     else:
         print("✅ No face inconsistencies found")
+
+    # Check for brightness and contrast inconsistencies
+    brightness_contrast_inconsistencies = check_brightness_contrast_consistency(frames, frame_rate)
+    if len(brightness_contrast_inconsistencies) > 0:
+        print("❗ Found brightness and contrast inconsistencies")
+        print(brightness_contrast_inconsistencies)
+    else:
+        print("✅ No brightness and contrast inconsistencies found")
+
+    # Check for blinks
+    blink_frames = detect_blinks(frames, frame_rate, face_detector)
+    if len(blink_frames) == 0:
+        print("❗ No blinks found")
+    elif len(blink_frames) > len(frames) / frame_rate * 1.5 and len(blink_frames) > 2:
+        print("❗ Too many blinks found")
+        print(blink_frames)
+    else:
+        print("✅ No blink inconsistencies found")
+        print("Blinks:", len(blink_frames))
 
 if __name__ == "__main__":
     filename = input("Enter filename: ")
