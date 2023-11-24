@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "prisma generate && next dev --port 80",
+    "build": "prisma generate && prisma db push && next build",
     "format": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
-    "start": "next start",
+    "start": "next start --port 80",
     "lint": "next lint"
   },
   "dependencies": {
