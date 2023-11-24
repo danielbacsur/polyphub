@@ -9,11 +9,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tqdm
 
+def get_current_path() -> str:
+    """Return path to current file"""
+    return os.path.dirname(os.path.abspath(__file__))
+
 class DlibFaceDetector:
     def __init__(self):
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(
-            f'{__file__}/../../models/shape_predictor_68_face_landmarks.dat'
+            f'{get_current_path()}/../models/shape_predictor_68_face_landmarks.dat'
         )
 
     def detect_faces(self, image: np.ndarray) -> List[dlib.rectangle]:
@@ -43,9 +47,19 @@ def download_video(url: str) -> str:
         extension = "file"
 
     # Download video
-    video_path = f'{__file__}/../../data/{hash_sha256(url)}.{extension}'
+    video_path = f'{get_current_path()}/../data/{hash_sha256(url)}.{extension}'
     video_path = os.path.abspath(video_path)
-    urllib.request.urlretrieve(url, video_path)
+
+    # urllib.request.urlretrieve(url, video_path)
+
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req) as response:
+        data = response.read()
+        with open(video_path, 'wb') as f:
+            f.write(data)
+
     return video_path
 
 def extract_frames(video_path: str) -> (List[np.ndarray], int):
@@ -69,11 +83,21 @@ def high_pass_filter(image: np.ndarray) -> np.ndarray:
     kernel = np.array([[-1, -1, -1], [-1, 8.9, -1], [-1, -1, -1]])
     return cv2.filter2D(image, -1, kernel)
 
+def crop_image(image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
+    """ Crop image around facial landmarks. """
+    # image_center = np.mean(landmarks, axis=0)
+    # image_center = image_center.astype(int)
+    # image_center = tuple(image_center)
+    kps_min = np.min(landmarks, axis=0) - 20
+    kps_max = np.max(landmarks, axis=0) + 20
+    cropped_image = image[kps_min[1]:kps_max[1], kps_min[0]:kps_max[0]]
+    return cropped_image
+
 def test():
     face_detector = DlibFaceDetector()
 
     # file = download_video()
-    frames, frame_rate = extract_frames(f"{__file__}/../../data/test.mp4")
+    frames, frame_rate = extract_frames(f"{get_current_path()}/../../data/test.mp4")
     print(f"Extracted {len(frames)} frames with frame rate {frame_rate}")
 
     noise_levels = []
@@ -91,12 +115,8 @@ def test():
             print("More than one face found")
         else:
             lms = face_detector.detect_landmarks(grayscale, faces[0])
-            # image_center = np.mean(lms, axis=0)
-            # image_center = image_center.astype(int)
-            # image_center = tuple(image_center)
-            kps_min = np.min(lms, axis=0) - 20
-            kps_max = np.max(lms, axis=0) + 20
-            cropped_image = grayscale[kps_min[1]:kps_max[1], kps_min[0]:kps_max[0]]
+            
+            cropped_image = crop_image(grayscale, lms)
 
             cv2.imshow("cropped", cropped_image)
             cv2.waitKey(1)
