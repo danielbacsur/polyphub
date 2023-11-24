@@ -149,7 +149,7 @@ def check_frame_consistency(frames: List[np.ndarray], frame_rate: int, threshold
 
         # Check if frame difference is above threshold
         if np.mean(frame_diff) > threshold:
-            alerts.append([idx / frame_rate, np.mean(frame_diff)])
+            alerts.append(idx / frame_rate)
 
         prev_frame = curr_frame
 
@@ -160,7 +160,7 @@ def check_face_consistency(frames: List[np.ndarray], frame_rate: int, face_detec
     for idx, frame in tqdm.tqdm(enumerate(frames), total=len(frames), leave=False):
         faces = face_detector.detect_faces(frame)
         if len(faces) != 1:
-            alerts.append([idx / frame_rate, len(faces)])
+            alerts.append(idx / frame_rate)
     
     return alerts
     
@@ -184,7 +184,7 @@ def check_brightness_contrast_consistency(frames: List[np.ndarray], frame_rate: 
         
         # Check if brightness or contrast difference is above the threshold
         if abs(brightness - prev_brightness) > brightness_threshold or abs(contrast - prev_contrast) > contrast_threshold:
-            alerts.append([idx / frame_rate, brightness, contrast])
+            alerts.append(idx / frame_rate)
 
         prev_brightness, prev_contrast = brightness, contrast
 
@@ -242,11 +242,10 @@ def detect_blinks(frames: List[np.ndarray], frame_rate: int, face_detector: Dlib
 
 def check_authenticity(file_path: str):
     face_detector = DlibFaceDetector()
-
-    # Check frame-to-frame consistency
+    
     frames, frame_rate = extract_frames(file_path)
     if len(frames) == 0:
-        print("❗ No frames found")
+        print("[❗] No frames found")
         return
     
     print(f"Extracted {len(frames)} frames with frame rate {frame_rate}")
@@ -254,36 +253,36 @@ def check_authenticity(file_path: str):
     # Check for frame inconsistencies
     frame_inconsistencies = check_frame_consistency(frames, frame_rate)
     if len(frame_inconsistencies) > 0:
-        print("❗ Found frame inconsistencies")
+        print("[❗] Found frame inconsistencies")
         print(frame_inconsistencies)
     else:
-        print("✅ No frame inconsistencies found")
+        print("[✅] No frame inconsistencies found")
 
     # Check for face count inconsistencies
     face_inconsistencies = check_face_consistency(frames, frame_rate, face_detector)
     if len(face_inconsistencies) > 0:
-        print("❗ Found face inconsistencies")
+        print("[❗] Found face inconsistencies")
         print(face_inconsistencies)
     else:
-        print("✅ No face inconsistencies found")
+        print("[✅] No face inconsistencies found")
 
     # Check for brightness and contrast inconsistencies
     brightness_contrast_inconsistencies = check_brightness_contrast_consistency(frames, frame_rate)
     if len(brightness_contrast_inconsistencies) > 0:
-        print("❗ Found brightness and contrast inconsistencies")
+        print("[❗] Found brightness and contrast inconsistencies")
         print(brightness_contrast_inconsistencies)
     else:
-        print("✅ No brightness and contrast inconsistencies found")
+        print("[✅] No brightness and contrast inconsistencies found")
 
     # Check for blinks
     blink_frames = detect_blinks(frames, frame_rate, face_detector)
     if len(blink_frames) == 0:
-        print("❗ No blinks found")
+        print("[❗] No blinks found")
     elif len(blink_frames) > len(frames) / frame_rate * 1.5 and len(blink_frames) > 2:
-        print("❗ Too many blinks found")
+        print("[❗] Too many blinks found")
         print(blink_frames)
     else:
-        print("✅ No blink inconsistencies found")
+        print("[✅] No blink inconsistencies found")
         print("Blinks:", len(blink_frames))
 
 if __name__ == "__main__":
