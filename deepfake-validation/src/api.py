@@ -55,6 +55,11 @@ def analyze_video(url: str) -> int:
 
     return jsonify([
         {
+            "type": "frame_rate",
+            "count": frame_rate,
+            "frames": len(frames),
+        },
+        {
             "type": "frame_inconsistencies",
             "count": len(frame_inconsistencies),
             "frames": frame_inconsistencies,
