@@ -12,7 +12,6 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-
 model User {
   // Unique identifier for the user
   id String @id @default(cuid())
@@ -28,6 +27,8 @@ model User {
 
   // URL for the user's image
   image String
+
+  history Validation[]
 
   // Timestamp of account creation, defaults to the current time
   createdAt DateTime @default(now())
@@ -72,4 +73,24 @@ model Account {
   @@unique([provider, providerAccountId])
   // An index for better query performance on userId
   @@index([userId])
+}
+
+model Validation {
+  id        String   @id @default(cuid())
+  video     String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  tags Tag[]
+}
+
+model Tag {
+  id        String @id @default(cuid())
+  timestamp Float
+  type      String
+
+  validation   Validation @relation(fields: [validationId], references: [id])
+  validationId String
 }
