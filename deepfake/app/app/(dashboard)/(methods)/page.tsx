@@ -7,16 +7,13 @@ export default async function WorkspacesPage() {
     <div className="h-full flex">
       <div className="flex-1 hidden lg:grid place-items-center">
         <div className="flex flex-col items-center space-y-4">
-          <h1>Upload Your Files</h1>
           <UploadForm />
         </div>
       </div>
       <div className="flex-1 grid place-items-center">
         <div className="flex flex-col items-center space-y-4">
-          <h1>Discover Our Method</h1>
-
           <Link href="/record">
-            <Button>Try It Out</Button>
+            <Button size="lg">TRY OUT OUR METHOD</Button>
           </Link>
         </div>
       </div>
