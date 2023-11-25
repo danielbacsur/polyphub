@@ -278,6 +278,8 @@ def validate_blur(frames: List[np.ndarray], frame_rate: int, face_detector: Dlib
 
         blur_baseline = check_blur(frame)
 
+        face = faces[0]
+
         l,r,b,t = face.left(), face.right(), face.bottom(), face.top()
         image_cropped = image[t:b, l:r]
         
@@ -285,6 +287,7 @@ def validate_blur(frames: List[np.ndarray], frame_rate: int, face_detector: Dlib
 
         if abs(blur_new - blur_baseline) > 45:
             blur_failed_frames.append(frame_idx / frame_rate)
+            
     return blur_failed_frames
 
 def check_authenticity(file_path: str):
