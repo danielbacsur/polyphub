@@ -36,7 +36,7 @@ export function UploadForm() {
 
     const callback = createCallback(validation.id);
 
-    const response = await fetch("/api/validation/validate", {
+    const response = await fetch("/api/validation/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -52,8 +52,8 @@ export function UploadForm() {
 
   const createCallback = (id: string) => {
     return process.env.NODE_ENV === "development"
-      ? `http://${process.env.NEXT_PUBLIC_TEST_DOMAIN}/api/callback/${id}`
-      : `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/api/callback/${id}`;
+      ? `http://${process.env.NEXT_PUBLIC_TEST_DOMAIN}/api/validation/${id}/finalize`
+      : `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/api/validation/${id}/finalize`;
   };
 
   return (

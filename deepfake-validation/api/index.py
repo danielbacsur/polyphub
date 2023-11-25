@@ -87,6 +87,8 @@ app = Flask(__name__)
 
 def timed_process(url: str, callback: str):
 
+    print("Analizing", url)
+
     analization = analyze_video(url)
 
     print("Posting to", callback)
