@@ -12,7 +12,7 @@ export default async function WorkspacesPage() {
       </div>
       <div className="flex-1 grid place-items-center">
         <div className="flex flex-col items-center space-y-4">
-          <Link href="/record">
+          <Link href="/interview">
             <Button size="lg">TRY OUT OUR METHOD</Button>
           </Link>
         </div>
