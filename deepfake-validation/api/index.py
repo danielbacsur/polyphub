@@ -6,7 +6,7 @@ import requests
 import multiprocessing
 
 
-def analyze_video(id: str, url: str) -> int:
+def analyze_video( url: str) -> int:
     video_path = download_video(url)
     frames, frame_rate = extract_frames(video_path)
     if len(frames) == 0:
@@ -55,7 +55,6 @@ def analyze_video(id: str, url: str) -> int:
     print("Blinks:", len(blink_frames))
 
     return jsonify({
-        "id": id,
         "tags": [
             {
                 "type": "frame_inconsistencies",
@@ -86,14 +85,14 @@ def analyze_video(id: str, url: str) -> int:
 
 app = Flask(__name__)
 
-def timed_process(id: str, url: str, callback_url: str):
+def timed_process(url: str, callback: str):
 
-    analization = analyze_video(id, url)
+    analization = analyze_video(url)
 
-    print("Posting to", callback_url)
+    print("Posting to", callback)
     
     try:
-        response = requests.post(callback_url, json=analization)
+        response = requests.post(callback, json=analization)
         print(f"Response from {url}: {response.status_code}")
     except Exception as e:
         print(f"Error during request: {e}")
@@ -102,13 +101,10 @@ def timed_process(id: str, url: str, callback_url: str):
 
 @app.route('/validate', methods=['POST'])
 def validate():
-    id = request.json['id']
     url = request.json['url']
-    origin = request.remote_addr
-
-    callback_url = f"http://{origin}/api/callback"
+    callback = request.json['callback']
     
-    process = multiprocessing.Process(target=timed_process, args=(id, url, callback_url))
+    process = multiprocessing.Process(target=timed_process, args=(url, callback))
     process.start()
 
     return "Success", 200
