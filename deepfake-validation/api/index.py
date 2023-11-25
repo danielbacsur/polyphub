@@ -73,6 +73,8 @@ def analyze_video( url: str) -> int:
                 "times": blink_frames,
             },
         ],
+        "length": len(frames),
+        "framerate": frame_rate,
         "duration": len(frames) / frame_rate,
         "blinks": blink_error_type
     }

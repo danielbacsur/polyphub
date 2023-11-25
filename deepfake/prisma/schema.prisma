@@ -95,8 +95,10 @@ model Validation {
 model Metadata {
   id String @id @default(cuid())
 
+  length    Int
+  framerate Float
   duration  Float
-  blinks  String
+  blinks    String
 
   validation   Validation @relation(fields: [validationId], references: [id])
   validationId String     @unique
