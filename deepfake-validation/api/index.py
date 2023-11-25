@@ -2,9 +2,11 @@ from flask import Flask, request, jsonify
 
 from utils import *
 
-app = Flask(__name__)
+import requests
+import multiprocessing
 
-def analyze_video(url: str) -> int:
+
+def analyze_video(id: str, url: str) -> int:
     video_path = download_video(url)
     frames, frame_rate = extract_frames(video_path)
     if len(frames) == 0:
@@ -53,6 +55,7 @@ def analyze_video(url: str) -> int:
     print("Blinks:", len(blink_frames))
 
     return jsonify({
+        "id": id,
         "tags": [
             {
                 "type": "frame_inconsistencies",
@@ -80,11 +83,35 @@ def analyze_video(url: str) -> int:
     })
 
 
+
+app = Flask(__name__)
+
+def timed_process(id: str, url: str, callback_url: str):
+
+    analization = analyze_video(id, url)
+
+    print("Posting to", callback_url)
+    
+    try:
+        response = requests.post(callback_url, json=analization)
+        print(f"Response from {url}: {response.status_code}")
+    except Exception as e:
+        print(f"Error during request: {e}")
+
+    exit()
+
 @app.route('/validate', methods=['POST'])
 def validate():
+    id = request.json['id']
     url = request.json['url']
+    origin = request.remote_addr
 
-    return analyze_video(url)
+    callback_url = f"http://{origin}/api/callback"
     
+    process = multiprocessing.Process(target=timed_process, args=(id, url, callback_url))
+    process.start()
+
+    return "Success", 200
+
 if __name__ == '__main__':
     app.run("0.0.0.0", 80)
