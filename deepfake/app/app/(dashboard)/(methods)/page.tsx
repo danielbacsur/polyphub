@@ -5,9 +5,9 @@ import Link from "next/link";
 export default async function WorkspacesPage() {
   return (
     <div className="h-full flex">
-      <div className="flex-1 grid place-items-center">
+      <div className="flex-1 hidden lg:grid place-items-center">
         <div className="flex flex-col items-center space-y-4">
-          <h1>Intuitech&apos;s Method</h1>
+          <h1>Upload Your Files</h1>
           <UploadForm />
         </div>
       </div>
