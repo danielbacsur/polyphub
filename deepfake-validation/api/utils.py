@@ -157,7 +157,8 @@ def check_frame_consistency(frames: List[np.ndarray], frame_rate: int, threshold
 
 def check_face_consistency(frames: List[np.ndarray], frame_rate: int, face_detector: DlibFaceDetector) -> List[List[float]]:
     alerts = []
-    for idx, frame in tqdm.tqdm(enumerate(frames), total=len(frames), leave=False):
+    for idx in tqdm.trange(0, len(frames) - 10, 10, leave=False):
+        frame = frames[idx]
         faces = face_detector.detect_faces(frame)
         if len(faces) != 1:
             alerts.append(idx / frame_rate)
@@ -208,7 +209,8 @@ def detect_blinks(frames: List[np.ndarray], frame_rate: int, face_detector: Dlib
     blink_counter = 0
     frame_counter = 0
 
-    for frame in tqdm.tqdm(frames, total=len(frames), leave=False):
+    for idx in tqdm.trange(0, len(frames) - 10, 10, leave=False):
+        frame = frames[idx]
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = face_detector.detect_faces(gray)
 
@@ -240,10 +242,10 @@ def detect_blinks(frames: List[np.ndarray], frame_rate: int, face_detector: Dlib
 
     return blink_frames
 
-def check_blur(frames: np.ndarray):
+def check_blur(frame: np.ndarray):
     grid_size=(16, 16)
 
-    height, width, _ = frames.shape
+    height, width, _ = frame.shape
 
     # Calculate the size of each grid cell
     cell_height, cell_width = height // grid_size[0], width // grid_size[1]
