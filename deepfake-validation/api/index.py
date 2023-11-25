@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 import multiprocessing
 from utils import *
@@ -50,6 +51,8 @@ def analyze_video( url: str) -> int:
     
     print("Blinks:", len(blink_frames))
 
+    os.remove(video_path)
+    
     return {
         "tags": [
             {
