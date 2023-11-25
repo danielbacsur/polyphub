@@ -55,28 +55,24 @@ def analyze_video(url: str) -> int:
     return jsonify([{
         "tags": [
             {
-                "id": 0,
                 "type": "frame_inconsistencies",
                 "count": len(frame_inconsistencies),
-                "frames": frame_inconsistencies,
+                "times": frame_inconsistencies,
             },
             {
-                "id": 1,
                 "type": "face_inconsistencies",
                 "count": len(face_inconsistencies),
-                "frames": face_inconsistencies,
+                "times": face_inconsistencies,
             },
             {
-                "id": 2,
                 "type": "brightness_contrast_inconsistencies",
                 "count": len(brightness_contrast_inconsistencies),
-                "frames": brightness_contrast_inconsistencies,
+                "times": brightness_contrast_inconsistencies,
             },
             {
-                "id": 3,
                 "type": "blinks",
                 "count": len(blink_frames),
-                "frames": blink_frames,
+                "times": blink_frames,
             },
         ],
         "frame_rate": frame_rate,
