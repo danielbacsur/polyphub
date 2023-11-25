@@ -21,22 +21,42 @@ export async function POST(
     data: {
       status: "complete",
       metadata: {
-        create: {
-          length: packet.length,
-          framerate: packet.framerate,
-          duration: packet.duration,
-          blinks: packet.blinks,
-          probability: packet.probability,
+        upsert: {
+          where: { validationId: id },
+          create: {
+            length: packet.length,
+            framerate: packet.framerate,
+            duration: packet.duration,
+            blinks: packet.blinks,
+            probability: packet.probability,
+          },
+          update: {
+            length: packet.length,
+            framerate: packet.framerate,
+            duration: packet.duration,
+            blinks: packet.blinks,
+            probability: packet.probability,
+          },
         },
       },
       tags: {
-        create: [
-          ...packet.tags.map((tag) => ({
+        upsert: packet.tags.map((tag) => ({
+          where: {
+            validationId_type: {
+              validationId: id,
+              type: tag.type,
+            },
+          },
+          create: {
             type: tag.type,
             count: tag.count,
             times: tag.times,
-          })),
-        ],
+          },
+          update: {
+            count: tag.count,
+            times: tag.times,
+          },
+        })),
       },
     },
   });

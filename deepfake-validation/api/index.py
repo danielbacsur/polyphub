@@ -5,9 +5,16 @@ from utils import *
 import requests
 
 
-def analyze_video( url: str, upsert_tag_callback: str) -> int:
+def analyze_video( url: str, upsert_tag_callback: str, upsert_metadata_callback: str) -> int:
     video_path = download_video(url)
     frames, frame_rate = extract_frames(video_path)
+
+    response = requests.post(upsert_metadata_callback, json={
+        "length": len(frames),
+        "framerate": frame_rate,
+        "duration": len(frames) / frame_rate,
+    })
+    print(f"Response from {upsert_metadata_callback}: {response.status_code}")
 
     face_detector = DlibFaceDetector()
 
@@ -27,12 +34,8 @@ def analyze_video( url: str, upsert_tag_callback: str) -> int:
         "times": frame_inconsistencies,
     }
 
-
     response = requests.post(upsert_tag_callback, json=frame_inconsistencies_tag)
     print(f"Response from {upsert_tag_callback}: {response.status_code}")
-
-
-
 
     # Check for face count inconsistencies
     face_inconsistencies = check_face_consistency(frames, frame_rate, face_detector)
@@ -48,13 +51,8 @@ def analyze_video( url: str, upsert_tag_callback: str) -> int:
         "times": face_inconsistencies,
     }
 
-
-
     response = requests.post(upsert_tag_callback, json=face_inconsistencies_tag)
     print(f"Response from {upsert_tag_callback}: {response.status_code}")
-
-
-
 
     # Check for brightness and contrast inconsistencies
     brightness_contrast_inconsistencies = check_brightness_contrast_consistency(frames, frame_rate)
@@ -70,13 +68,8 @@ def analyze_video( url: str, upsert_tag_callback: str) -> int:
         "times": brightness_contrast_inconsistencies,
     }
 
-
     response = requests.post(upsert_tag_callback, json=brightness_contrast_inconsistencies_tag)
     print(f"Response from {upsert_tag_callback}: {response.status_code}")
-
-
-
-
 
     # Check for blinks
     blink_frames = detect_blinks(frames, frame_rate, face_detector)
@@ -96,14 +89,9 @@ def analyze_video( url: str, upsert_tag_callback: str) -> int:
         "times": blink_frames,
     }
 
-
-
     response = requests.post(upsert_tag_callback, json=blinks_tag)
     print(f"Response from {upsert_tag_callback}: {response.status_code}")
 
-
-
-    
     print("Blinks:", len(blink_frames))
 
     # Check blur
@@ -117,15 +105,8 @@ def analyze_video( url: str, upsert_tag_callback: str) -> int:
         "times": blur_failed_frames,
     }
 
-
-
     response = requests.post(upsert_tag_callback, json=blur_tag)
     print(f"Response from {upsert_tag_callback}: {response.status_code}")
-
-
-
-
-
 
     # Probability calculation based on metrics
     probability = 0.0
@@ -172,11 +153,11 @@ def analyze_video( url: str, upsert_tag_callback: str) -> int:
 
 app = Flask(__name__)
 
-def timed_process(url: str, finalize_callback: str, upsert_tag_callback: str):
+def timed_process(url: str, finalize_callback: str, upsert_tag_callback: str, upsert_metadata_callback: str):
 
     print("Analizing", url)
 
-    analization = analyze_video(url, upsert_tag_callback)
+    analization = analyze_video(url, upsert_tag_callback, upsert_metadata_callback)
 
     print("Posting to", finalize_callback)
     
@@ -193,8 +174,10 @@ def validate():
     url = request.json['url']
     finalize_callback = request.json['finalizeCallback']
     upsert_tag_callback = request.json['upsertTagCallback']
+    upsert_metadata_callback = request.json['upsertMetadataCallback']
     
-    process = multiprocessing.Process(target=timed_process, args=(url, finalize_callback, upsert_tag_callback))
+    
+    process = multiprocessing.Process(target=timed_process, args=(url, finalize_callback, upsert_tag_callback, upsert_metadata_callback))
     process.start()
 
     return "Success", 200
