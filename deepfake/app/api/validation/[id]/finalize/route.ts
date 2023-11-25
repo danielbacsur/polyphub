@@ -16,7 +16,7 @@ export async function POST(
   await prisma.validation.update({
     where: { id },
     data: {
-      status: "finished",
+      status: "complete",
       metadata: {
         create: {
           duration: packet.duration,

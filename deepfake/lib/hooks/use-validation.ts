@@ -1,8 +1,7 @@
-import { ValidationContext } from "@/lib/contexts";
-import { type EValidation } from "../types/prisma";
+import { ValidationContext, type ValidationContextType } from "@/lib/contexts";
 import { useContext } from "react";
 
-export function useValidation(): EValidation {
+export function useValidation(): ValidationContextType {
   const context = useContext(ValidationContext);
 
   if (!context) throw new Error("ValidationContext not defined.");

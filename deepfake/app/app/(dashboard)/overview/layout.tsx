@@ -1,13 +1,8 @@
-import { ValidationsProvider } from "@/components/validations-provider";
-import { getUser, getValidations } from "@/lib/fetchers";
+import { ValidationProvider } from "@/components/validation-provider";
+import { getValidations } from "@/lib/fetchers/validation";
+import { getUser } from "@/lib/fetchers";
 import { type ReactNode } from "react";
 import { type Metadata } from "next";
-import { ValidationProvider } from "@/components/validation-provider";
-import { prisma } from "@/lib/clients/prisma";
-import { Validation } from "@prisma/client";
-import { EValidation } from "@/lib/types/prisma";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,26 +14,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   const validations = await getValidations(user.id);
 
-  const validation = (await prisma.validation.findFirst({
-    where: {
-      user: { id: user.id },
-    },
-    include: {
-      tags: true,
-      metadata: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  })) as EValidation;
-
-  console.log(validation);
-
   return (
-    <ValidationsProvider validations={validations}>
-      <ValidationProvider validation={validation}>
-        {children}
-      </ValidationProvider>
-    </ValidationsProvider>
+    <ValidationProvider validations={validations}>
+      {children}
+    </ValidationProvider>
   );
 }

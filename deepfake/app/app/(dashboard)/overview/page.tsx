@@ -9,10 +9,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getValidation } from "@/lib/fetchers/validation";
 import { useValidation } from "@/lib/hooks/use-validation";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function OverviewPage() {
-  // const validation = useValidation();
+  const { validation, setValidation } = useValidation();
+
+  const update = async (interval: NodeJS.Timeout) => {
+    toast.info("Updating validation...");
+
+    const response = await getValidation(validation.id);
+
+    setValidation(response);
+
+    if (validation.status === "pending") return;
+
+    clearInterval(interval);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      update(interval);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [validation]);
+
+  return <>{validation.id} - {validation.status}</>;
 
   return (
     <div className="h-full flex flex-col">

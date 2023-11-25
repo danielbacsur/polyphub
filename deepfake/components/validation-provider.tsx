@@ -1,18 +1,22 @@
 "use client";
 
 import { ValidationContext } from "@/lib/contexts";
-import { type EValidation } from "@/lib/types/prisma";
-import { type ReactNode } from "react";
+import { Validation } from "@/lib/types/prisma";
+import { useState, type ReactNode } from "react";
 
 export function ValidationProvider({
-  validation,
+  validations,
   children,
 }: {
-  validation: EValidation;
+  validations: Validation[];
   children: ReactNode;
 }) {
+  const [validation, setValidation] = useState<Validation>(validations[0]);
+
   return (
-    <ValidationContext.Provider value={validation}>
+    <ValidationContext.Provider
+      value={{ validations, validation, setValidation }}
+    >
       {children}
     </ValidationContext.Provider>
   );

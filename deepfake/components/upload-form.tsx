@@ -1,7 +1,6 @@
 "use client";
 
-import { createValidation, submitValidation } from "@/lib/actions/prisma";
-import { getUser } from "@/lib/fetchers";
+import { createValidation, submitValidation } from "@/lib/actions/validation";
 import { useUser } from "@/lib/hooks/use-user";
 import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
@@ -18,7 +17,8 @@ export function UploadForm() {
     event.preventDefault();
 
     if (!inputFileRef.current?.files) {
-      throw new Error("No file selected");
+      toast.error("You need to upload a file");
+      return;
     }
 
     const file = inputFileRef.current.files[0];
@@ -34,7 +34,7 @@ export function UploadForm() {
 
     const validation = await createValidation(user, url);
 
-    toast.loading("Submitting validation");
+    toast.loading("Getting your results");
 
     const success = await submitValidation(validation);
 
@@ -43,15 +43,16 @@ export function UploadForm() {
       return;
     }
 
+    toast.error(validation.id);
+
+
     router.push("/overview");
   };
 
   return (
-    <>
-      <form onSubmit={onSubmit}>
-        <input name="file" ref={inputFileRef} type="file" required />
-        <button type="submit">Upload</button>
-      </form>
-    </>
+    <form onSubmit={onSubmit}>
+      <input name="file" ref={inputFileRef} type="file" required />
+      <button type="submit">Upload</button>
+    </form>
   );
 }

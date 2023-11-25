@@ -1,3 +1,10 @@
-import { Metadata, type Tag, type Validation } from "@prisma/client";
+import {
+  type Metadata,
+  type Tag,
+  type Validation as LonelyValidation,
+} from "@prisma/client";
 
-export type EValidation = Validation & { tags: Tag[], metadata: Metadata | null };
+export type Validation = LonelyValidation & {
+  tags: Tag[];
+  metadata: Metadata | null;
+};
