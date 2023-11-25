@@ -9,6 +9,8 @@ export async function POST(
 
   const packet = (await request.json()) as {
     tags: { type: string; count: number; times: number[] }[];
+    length: number;
+    framerate: number;
     duration: number;
     blinks: string;
   };
@@ -19,6 +21,8 @@ export async function POST(
       status: "complete",
       metadata: {
         create: {
+          length: packet.length,
+          framerate: packet.framerate,
           duration: packet.duration,
           blinks: packet.blinks,
         },
