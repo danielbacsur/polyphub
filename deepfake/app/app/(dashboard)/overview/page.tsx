@@ -11,11 +11,13 @@ import {
 } from "@/components/ui/table";
 import { getValidation } from "@/lib/fetchers/validation";
 import { useValidation } from "@/lib/hooks/use-validation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 export default function OverviewPage() {
   const { validation, setValidation } = useValidation();
+
+  const interval = useRef<NodeJS.Timeout | null>(null);
 
   const update = async () => {
     toast.info("Updating validation...");
@@ -26,15 +28,19 @@ export default function OverviewPage() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    interval.current = setInterval(() => {
       update();
-
-      if (validation.status === "complete") {
-        clearInterval(interval);
-      }
     }, 4000);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (interval.current) clearInterval(interval.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (validation?.status === "complete" && interval.current) {
+      clearInterval(interval.current);
+    }
   }, [validation]);
 
   return (
