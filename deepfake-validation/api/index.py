@@ -51,6 +51,11 @@ def analyze_video( url: str) -> int:
     
     print("Blinks:", len(blink_frames))
 
+    # Check blur
+    blur_failed_frames = validate_blur(frames, frame_rate, face_detector)
+    if len(blur_failed_frames) > 0:
+        print("Found blur inconsistencies")
+
     os.remove(video_path)
     
     return {
@@ -75,6 +80,11 @@ def analyze_video( url: str) -> int:
                 "count": len(blink_frames),
                 "times": blink_frames,
             },
+            {
+                "type": "blur",
+                "count": len(blur_failed_frames),
+                "times": blur_failed_frames,
+            }
         ],
         "length": len(frames),
         "framerate": frame_rate,

@@ -240,6 +240,51 @@ def detect_blinks(frames: List[np.ndarray], frame_rate: int, face_detector: Dlib
 
     return blink_frames
 
+def check_blur(frames: np.ndarray):
+    grid_size=(16, 16)
+
+    height, width, _ = frames.shape
+
+    # Calculate the size of each grid cell
+    cell_height, cell_width = height // grid_size[0], width // grid_size[1]
+
+    # Initialize an array to store blurriness values
+    blurriness_grid = np.zeros(grid_size)
+
+    for row in range(grid_size[0]):
+        for col in range(grid_size[1]):
+            # Extract the cell
+            cell = frame[row * cell_height:(row + 1) * cell_height,
+                            col * cell_width:(col + 1) * cell_width]
+
+            # Calculate the Laplacian variance
+            variance_of_laplacian = cv2.Laplacian(cell, cv2.CV_64F).var()
+
+            # Store the blurriness value
+            blurriness_grid[row, col] = variance_of_laplacian
+
+    return np.std(blurriness_grid)
+
+def validate_blur(frames: List[np.ndarray], frame_rate: int, face_detector: DlibFaceDetector):
+    blur_failed_frames = []
+    for frame_idx in range(0, len(frames) - 10, 10):
+        frame = frames[frame_idx]
+        
+        faces = face_detector.detect_faces(frame)
+        if len(faces) != 1:
+            continue
+
+        blur_baseline = check_blur(frame)
+
+        l,r,b,t = face.left(), face.right(), face.bottom(), face.top()
+        image_cropped = image[t:b, l:r]
+        
+        blur_new = check_blur(image_cropped)
+
+        if abs(blur_new - blur_baseline) > 45:
+            blur_failed_frames.append(frame_idx / frame_rate)
+    return blur_failed_frames
+
 def check_authenticity(file_path: str):
     face_detector = DlibFaceDetector()
     
