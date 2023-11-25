@@ -259,8 +259,11 @@ def check_blur(frame: np.ndarray):
             cell = frame[row * cell_height:(row + 1) * cell_height,
                             col * cell_width:(col + 1) * cell_width]
 
-            # Calculate the Laplacian variance
-            variance_of_laplacian = cv2.Laplacian(cell, cv2.CV_64F).var()
+            try:
+                # Calculate the Laplacian variance
+                variance_of_laplacian = cv2.Laplacian(cell, cv2.CV_64F).var()
+            except:
+                variance_of_laplacian = 0
 
             # Store the blurriness value
             blurriness_grid[row, col] = variance_of_laplacian
