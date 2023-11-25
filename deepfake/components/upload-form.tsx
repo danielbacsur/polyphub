@@ -1,6 +1,6 @@
 "use client";
 
-import { createValidation } from "@/lib/actions/prisma";
+import { createValidation, submitValidation } from "@/lib/actions/prisma";
 import { getUser } from "@/lib/fetchers";
 import { useUser } from "@/lib/hooks/use-user";
 import { upload } from "@vercel/blob/client";
@@ -23,37 +23,27 @@ export function UploadForm() {
 
     const file = inputFileRef.current.files[0];
 
+    toast.loading("Uploading video");
+
     const { url } = await upload(file.name, file, {
       access: "public",
       handleUploadUrl: "/api/upload",
     });
 
-    toast.loading(url);
+    toast.loading("Creating validation");
 
-    const validation = await createValidation(user, url)
+    const validation = await createValidation(user, url);
 
-    console.log(validation) 
+    toast.loading("Submitting validation");
 
-    const callback = createCallback(validation.id);
+    const success = await submitValidation(validation);
 
-    const response = await fetch("/api/validation/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        url,
-        callback
-      }),
-    }).then((res) => res.json());
+    if (!success) {
+      toast.error("Something went wrong");
+      return;
+    }
 
-    // toast.success(JSON.stringify(validation));
-
-    // router.push("/overview");
-  };
-
-  const createCallback = (id: string) => {
-    return process.env.NODE_ENV === "development"
-      ? `http://${process.env.NEXT_PUBLIC_TEST_DOMAIN}/api/validation/${id}/finalize`
-      : `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/api/validation/${id}/finalize`;
+    router.push("/overview");
   };
 
   return (

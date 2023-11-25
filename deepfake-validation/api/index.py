@@ -97,7 +97,7 @@ def timed_process(url: str, callback: str):
     
     try:
         response = requests.post(callback, json=analization)
-        print(f"Response from {url}: {response.status_code}")
+        print(f"Response from {callback}: {response.status_code}")
     except Exception as e:
         print(f"Error during request: {e}")
 

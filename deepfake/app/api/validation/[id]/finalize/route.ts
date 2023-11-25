@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/clients/prisma";
 
 export async function POST(
@@ -16,6 +16,7 @@ export async function POST(
   await prisma.validation.update({
     where: { id },
     data: {
+      status: "finished",
       metadata: {
         create: {
           duration: packet.duration,
