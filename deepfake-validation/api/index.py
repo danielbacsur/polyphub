@@ -60,9 +60,9 @@ def analyze_video( url: str) -> int:
     probability = 0.0
 
     # Weight factors for each metric
-    weight_frame_inconsistencies = 0.5
-    weight_blink_inconsistencies = 0.1
-    weight_blur_failures = 0.4
+    weight_frame_inconsistencies = 0.2
+    weight_blink_inconsistencies = 0.4
+    weight_blur_failures = 4
 
     total_frames = len(frames)
 
