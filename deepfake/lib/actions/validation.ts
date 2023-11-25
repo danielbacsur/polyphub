@@ -21,10 +21,7 @@ export async function createValidation(
 }
 
 export async function submitValidation({ id, url }: Validation) {
-  const callback =
-    process.env.NODE_ENV === "development"
-      ? `http://${process.env.NEXT_PUBLIC_TEST_DOMAIN}/api/validation/${id}/finalize`
-      : `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/api/validation/${id}/finalize`;
+  const callback = `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/api/validation/${id}/finalize`;
 
   const response = await fetch(
     `http://${process.env.VALIDATION_API_ADDRESS}/validate`,

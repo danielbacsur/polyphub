@@ -7,8 +7,8 @@ export type UserContextType = User;
 export const UserContext = createContext<UserContextType | null>(null);
 
 export type ValidationContextType = {
-  validation: Validation;
   validations: Validation[];
+  validation: Validation;
   setValidation: (validation: Validation) => void;
 };
 
