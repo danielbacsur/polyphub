@@ -52,7 +52,7 @@ def analyze_video(url: str) -> int:
     
     print("Blinks:", len(blink_frames))
 
-    return jsonify([{
+    return jsonify({
         "tags": [
             {
                 "type": "frame_inconsistencies",
@@ -75,24 +75,16 @@ def analyze_video(url: str) -> int:
                 "times": blink_frames,
             },
         ],
-        "frame_rate": frame_rate,
-        "frame_count": len(frames),
-        "blinks_info": blink_error_type
-    }])
+        "duration": len(frames) / frame_rate,
+        "blinks": blink_error_type
+    })
 
 
 @app.route('/validate', methods=['POST'])
 def validate():
     url = request.json['url']
 
-    if not url:
-        return jsonify({'error': 'no-url'}), 400
-
-    analysis = analyze_video(url)
+    return analyze_video(url)
     
-    print(analysis)
-
-    return analysis
-
 if __name__ == '__main__':
     app.run("0.0.0.0", 80)
