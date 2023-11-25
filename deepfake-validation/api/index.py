@@ -5,6 +5,8 @@ from utils import *
 import requests
 import multiprocessing
 
+import json
+
 
 def analyze_video( url: str) -> int:
     video_path = download_video(url)
@@ -54,7 +56,7 @@ def analyze_video( url: str) -> int:
     
     print("Blinks:", len(blink_frames))
 
-    return jsonify({
+    obj = {
         "tags": [
             {
                 "type": "frame_inconsistencies",
@@ -79,8 +81,9 @@ def analyze_video( url: str) -> int:
         ],
         "duration": len(frames) / frame_rate,
         "blinks": blink_error_type
-    })
+    }
 
+    return jsonify(json.dumps(obj))
 
 
 app = Flask(__name__)
