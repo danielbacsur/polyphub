@@ -13,6 +13,7 @@ export async function POST(
     framerate: number;
     duration: number;
     blinks: string;
+    probability: number;
   };
 
   await prisma.validation.update({
@@ -25,6 +26,7 @@ export async function POST(
           framerate: packet.framerate,
           duration: packet.duration,
           blinks: packet.blinks,
+          probability: packet.probability,
         },
       },
       tags: {

@@ -99,6 +99,7 @@ model Metadata {
   framerate Float
   duration  Float
   blinks    String
+  probability Float
 
   validation   Validation @relation(fields: [validationId], references: [id])
   validationId String     @unique
