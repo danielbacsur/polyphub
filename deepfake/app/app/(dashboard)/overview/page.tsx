@@ -36,9 +36,9 @@ export default function OverviewPage() {
   return (
     <>
       <div className="h-full flex flex-col">
-        <div className="flex-grow pl-[calc(25vw_+_1rem)] pr-[calc(10vw_+_1rem)] pt-4 -mb-4">
-          <div className="bg-pink-500 w-full h-full rounded-lg overflow-hidden">
-            {/* <video className="h-max-full rounded-lg" src={validation.video} controls /> */}
+        <div className="flex-grow pl-[calc(30vw_+_1rem)] pr-[calc(10vw_+_1rem)] pt-4 -mb-4">
+          <div className="bg-black w-full h-full rounded-lg relative">
+           
           </div>
         </div>
         <div className="p-4">
@@ -48,16 +48,18 @@ export default function OverviewPage() {
             </Table.TableCaption>
             <Table.TableHeader>
               <Table.TableRow>
-                <Table.TableHead className="w-[25vw]">Types</Table.TableHead>
+                <Table.TableHead className="w-[30vw]">Types</Table.TableHead>
                 <Table.TableHead />
-                <Table.TableHead className="w-[10vw] text-right">Count</Table.TableHead>
+                <Table.TableHead className="w-[10vw] text-right">
+                  Count
+                </Table.TableHead>
               </Table.TableRow>
             </Table.TableHeader>
 
             <Table.TableBody>
               {validation.tags.map((tag) => (
                 <Table.TableRow key={tag.id}>
-                  <Table.TableCell className="w-[25vw] font-medium">
+                  <Table.TableCell className="w-[30vw] font-medium">
                     {tag.type}
                   </Table.TableCell>
                   <Table.TableCell className="px-0 relative border-x">
