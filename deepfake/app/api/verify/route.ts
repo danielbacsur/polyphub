@@ -24,33 +24,29 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const session = await getSession();
 
   if (session) {
-    const validation = await prisma.$transaction(async (transaction) => {
-      const validation = await transaction.validation.create({
+    const validation = await prisma.validation.create({
+      data: {
+        video: url,
+        user: {
+          connect: {
+            id: session.user.id,
+          },
+        },
+      },
+    });
+
+    for (const tag of tags) {
+      await prisma.tag.create({
         data: {
-          video: url,
-          user: {
+          ...tag,
+          validation: {
             connect: {
-              id: session.user.id,
+              id: validation.id,
             },
           },
         },
       });
-
-      for (const tag of tags) {
-        await transaction.tag.create({
-          data: {
-            ...tag,
-            validation: {
-              connect: {
-                id: validation.id,
-              },
-            },
-          },
-        });
-      }
-
-      return validation;
-    });
+    }
 
     return NextResponse.json({ validation });
   }

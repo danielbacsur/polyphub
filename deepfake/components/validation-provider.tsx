@@ -1,14 +1,14 @@
 "use client";
 
 import { ValidationContext } from "@/lib/contexts";
-import { type Validation } from "@prisma/client";
+import { type EValidation } from "@/lib/types/prisma";
 import { type ReactNode } from "react";
 
-export function UserProvider({
+export function ValidationProvider({
   validation,
   children,
 }: {
-  validation: Validation;
+  validation: EValidation;
   children: ReactNode;
 }) {
   return (

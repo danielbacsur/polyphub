@@ -11,12 +11,17 @@ export async function getUser(): Promise<User> {
   return session.user;
 }
 
-export async function getValidations(id: string): Promise<Validation[]> {
+export async function getValidations(
+  id: string
+): Promise<(Validation & { tags: Tag[] })[]> {
   const validations = await prisma.validation.findMany({
     where: {
       user: {
         id,
       },
+    },
+    include: {
+      tags: true,
     },
   });
   return validations || notFound();
