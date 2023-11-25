@@ -35,24 +35,43 @@ export default function OverviewPage() {
 
   return (
     <>
-      <div className="h-full flex flex-col">
-        <div className="flex-grow pl-[calc(30vw_+_1rem)] pr-[calc(10vw_+_1rem)] pt-4 -mb-4">
-          <div className="bg-black w-full h-full rounded-lg relative">
-           
+      <div className="grid lg:hidden h-full place-items-center">
+        Sorry you screen is too small.
+      </div>
+      <div className="hidden lg:flex h-full flex-col">
+        <div className="flex-grow pl-[calc(40vw_+_1rem)] pr-4 py-4 -mb-4">
+          <div className="bg-black w-full h-full rounded-lg relative overflow-hidden">
+            <video
+              className="absolute bottom-0 min-h-full min-w-full"
+              width="640"
+              height="308"
+              loop
+              muted
+              autoPlay
+              controls
+              src={validation.url}
+            />
           </div>
         </div>
         <div className="p-4">
           <Table.Table>
             <Table.TableCaption>
-              These are the tags that were detected in your video.
+              {validation.status === "complete" &&
+                validation.tags.length === 0 &&
+                "No tags were detected in your video."}
+              {validation.status === "complete" &&
+                validation.tags.length > 0 &&
+                "These are the tags that were detected in your video."}
+              {validation.status === "pending" &&
+                "Your video is being processed."}
             </Table.TableCaption>
             <Table.TableHeader>
               <Table.TableRow>
                 <Table.TableHead className="w-[30vw]">Types</Table.TableHead>
-                <Table.TableHead />
                 <Table.TableHead className="w-[10vw] text-right">
                   Count
                 </Table.TableHead>
+                <Table.TableHead />
               </Table.TableRow>
             </Table.TableHeader>
 
@@ -61,6 +80,10 @@ export default function OverviewPage() {
                 <Table.TableRow key={tag.id}>
                   <Table.TableCell className="w-[30vw] font-medium">
                     {tag.type}
+                  </Table.TableCell>
+
+                  <Table.TableCell className="w-[10vw] text-right">
+                    {tag.count}
                   </Table.TableCell>
                   <Table.TableCell className="px-0 relative border-x">
                     {tag.times.map((time) => {
@@ -78,9 +101,6 @@ export default function OverviewPage() {
                         />
                       );
                     })}
-                  </Table.TableCell>
-                  <Table.TableCell className="w-[10vw] text-right">
-                    {tag.count}
                   </Table.TableCell>
                 </Table.TableRow>
               ))}
