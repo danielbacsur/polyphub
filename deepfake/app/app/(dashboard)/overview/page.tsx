@@ -66,8 +66,11 @@ export default function OverviewPage() {
             <Table.TableHeader>
               <Table.TableRow>
                 <Table.TableHead className="w-[30vw]">Types</Table.TableHead>
-                <Table.TableHead className="w-[10vw] text-right">
+                <Table.TableHead className="w-[5vw] text-center">
                   Count
+                </Table.TableHead>
+                <Table.TableHead className="w-[5vw] text-center">
+                  %
                 </Table.TableHead>
                 <Table.TableHead />
               </Table.TableRow>
@@ -80,10 +83,17 @@ export default function OverviewPage() {
                     {tag.type}
                   </Table.TableCell>
 
-                  <Table.TableCell className="w-[10vw] text-right">
+                  <Table.TableCell className="w-[5vw] text-center">
                     {tag.count}
                   </Table.TableCell>
-                  <Table.TableCell className="px-0 relative border-x">
+
+                  <Table.TableCell className="w-[5vw] text-center">
+                    {(
+                      (tag.count / (validation.metadata?.length || 1)) *
+                      100
+                    ).toFixed(1)}
+                  </Table.TableCell>
+                  <Table.TableCell className="pl-[2px] pr-0 relative border-x">
                     {tag.times.map((time) => {
                       const left = getTimelinePercent(
                         time,
