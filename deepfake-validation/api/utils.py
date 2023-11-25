@@ -270,13 +270,13 @@ def check_blur(frame: np.ndarray):
 def validate_blur(frames: List[np.ndarray], frame_rate: int, face_detector: DlibFaceDetector):
     blur_failed_frames = []
     for frame_idx in range(0, len(frames) - 10, 10):
-        frame = frames[frame_idx]
+        image = frames[frame_idx]
         
-        faces = face_detector.detect_faces(frame)
+        faces = face_detector.detect_faces(image)
         if len(faces) != 1:
             continue
 
-        blur_baseline = check_blur(frame)
+        blur_baseline = check_blur(image)
 
         face = faces[0]
 
@@ -287,7 +287,7 @@ def validate_blur(frames: List[np.ndarray], frame_rate: int, face_detector: Dlib
 
         if abs(blur_new - blur_baseline) > 45:
             blur_failed_frames.append(frame_idx / frame_rate)
-            
+
     return blur_failed_frames
 
 def check_authenticity(file_path: str):
@@ -334,6 +334,14 @@ def check_authenticity(file_path: str):
     else:
         print("[✅] No blink inconsistencies found")
         print("Blinks:", len(blink_frames))
+
+    # Check blur
+    blur_inconsistencies = validate_blur(frames, frame_rate, face_detector)
+    if len(blur_inconsistencies) > 0:
+        print("[❗] Found blur inconsistencies")
+        print(blur_inconsistencies)
+    else:
+        print("[✅] No blur inconsistencies found")
 
 if __name__ == "__main__":
     filename = input("Enter filename: ")
