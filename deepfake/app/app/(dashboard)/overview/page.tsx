@@ -29,10 +29,10 @@ export default function OverviewPage() {
     const interval = setInterval(() => {
       update();
 
-      if (validation.status === "completed") {
+      if (validation.status === "complete") {
         clearInterval(interval);
       }
-    }, 1000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [validation]);
