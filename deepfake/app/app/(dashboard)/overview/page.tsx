@@ -17,22 +17,23 @@ import { toast } from "sonner";
 export default function OverviewPage() {
   const { validation, setValidation } = useValidation();
 
-  const update = async (interval: NodeJS.Timeout) => {
+  const update = async () => {
     toast.info("Updating validation...");
 
     const response = await getValidation(validation.id);
 
     setValidation(response);
-
-    if (validation.status === "pending") return;
-
-    clearInterval(interval);
   };
+
 
   useEffect(() => {
     const interval = setInterval(() => {
-      update(interval);
-    }, 1000);
+      update();
+
+      if (validation.status === 'completed') {
+        clearInterval(interval);
+      }
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [validation]);
