@@ -10,7 +10,7 @@ def analyze_video( url: str) -> int:
     frames, frame_rate = extract_frames(video_path)
 
     face_detector = DlibFaceDetector()
-    
+
     print(f"Extracted {len(frames)} frames with frame rate {frame_rate}")
 
     # Check for frame inconsistencies
@@ -56,6 +56,32 @@ def analyze_video( url: str) -> int:
     if len(blur_failed_frames) > 0:
         print("Found blur inconsistencies")
 
+    # Probability calculation based on metrics
+    probability = 0.0
+
+    # Weight factors for each metric
+    weight_frame_inconsistencies = 0.5
+    weight_blink_inconsistencies = 0.1
+    weight_blur_failures = 0.4
+
+    total_frames = len(frames)
+
+    # Adjust probability based on frame inconsistencies
+    if len(frame_inconsistencies) > 0:
+        probability += weight_frame_inconsistencies
+
+    # Adjust probability based on blink inconsistencies
+    if blink_error_type == "no-blinks":
+        probability += weight_blink_inconsistencies
+
+    # Adjust probability based on blur failures
+    blur_failure_ratio = len(blur_failed_frames) * frame_rate / 10 / total_frames
+    if blur_failure_ratio > 0.1:  # Assuming more than 10% blur failures is significant
+        probability += weight_blur_failures * blur_failure_ratio
+
+    # Normalize probability to be within 0 to 1
+    probability = np.clip(probability, 0, 1)
+
     os.remove(video_path)
     
     return {
@@ -89,7 +115,8 @@ def analyze_video( url: str) -> int:
         "length": len(frames),
         "framerate": frame_rate,
         "duration": len(frames) / frame_rate,
-        "blinks": blink_error_type
+        "blinks": blink_error_type,
+        "deepfake_probability": probability
     }
 
 app = Flask(__name__)
