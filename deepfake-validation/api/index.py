@@ -116,7 +116,7 @@ def analyze_video( url: str) -> int:
         "framerate": frame_rate,
         "duration": len(frames) / frame_rate,
         "blinks": blink_error_type,
-        "deepfake_probability": probability
+        "probability": probability
     }
 
 app = Flask(__name__)
