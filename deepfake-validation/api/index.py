@@ -56,7 +56,7 @@ def analyze_video( url: str) -> int:
     
     print("Blinks:", len(blink_frames))
 
-    obj = {
+    return {
         "tags": [
             {
                 "type": "frame_inconsistencies",
@@ -83,7 +83,6 @@ def analyze_video( url: str) -> int:
         "blinks": blink_error_type
     }
 
-    return jsonify(json.dumps(obj))
 
 
 app = Flask(__name__)
