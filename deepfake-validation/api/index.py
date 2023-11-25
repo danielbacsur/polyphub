@@ -92,11 +92,11 @@ def validate():
     if not url:
         return jsonify({'error': 'no-url'}), 400
 
-    analysis = analyze_video(url)[0]
+    analysis = analyze_video(url)
     
     print(analysis)
 
     return analysis
 
 if __name__ == '__main__':
-    app.run()
+    app.run("0.0.0.0", 80)
