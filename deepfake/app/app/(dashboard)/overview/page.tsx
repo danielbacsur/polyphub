@@ -43,8 +43,6 @@ export default function OverviewPage() {
           <div className="bg-black w-full h-full rounded-lg relative overflow-hidden">
             <video
               className="absolute bottom-0 min-h-full min-w-full"
-              width="640"
-              height="308"
               loop
               muted
               autoPlay
