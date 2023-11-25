@@ -75,7 +75,7 @@ def analyze_video( url: str) -> int:
         probability += weight_blink_inconsistencies
 
     # Adjust probability based on blur failures
-    blur_failure_ratio = len(blur_failed_frames) * frame_rate / 10 / total_frames
+    blur_failure_ratio = len(blur_failed_frames) / total_frames
     if blur_failure_ratio > 0.1:  # Assuming more than 10% blur failures is significant
         probability += weight_blur_failures * blur_failure_ratio
 
