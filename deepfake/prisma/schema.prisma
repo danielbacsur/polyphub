@@ -76,8 +76,14 @@ model Account {
 }
 
 model Validation {
-  id        String   @id @default(cuid())
-  video     String
+  id String @id @default(cuid())
+
+  url String
+
+  blinkInfo  String
+  frameCount Int
+  frameRate  Float
+
   createdAt DateTime @default(now())
 
   user   User   @relation(fields: [userId], references: [id])
@@ -87,9 +93,11 @@ model Validation {
 }
 
 model Tag {
-  id        String @id @default(cuid())
-  timestamp Float
-  type      String
+  id String @id @default(cuid())
+
+  type   String
+  count  Int
+  times Float[]
 
   validation   Validation @relation(fields: [validationId], references: [id])
   validationId String

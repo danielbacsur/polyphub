@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/clients/prisma";
 import { getSession } from "@/lib/utils/auth";
+import { NewTags, NewValidation, RawValidation } from "@/lib/types/python";
+
+if (!process.env.VALIDATION_API_ADDRESS) {
+  throw new Error("VALIDATION_API_ADDRESS not found.");
+}
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const { url } = (await req.json()) as {
@@ -11,22 +16,42 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return new NextResponse("URL not found.", { status: 400 });
   }
 
-  const { tags } = (await fetch(`${req.nextUrl.origin}/api/flask`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      url,
-    }),
-  }).then((res) => res.json())) as {
-    tags: { timestamp: number; type: string }[];
+  const res = (await fetch(
+    `http://${process.env.VALIDATION_API_ADDRESS}/validate`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url,
+      }),
+    }
+  ).then((res) => res.json())) as any[];
+
+  const rawValidation = res[0] as RawValidation;
+
+  if (rawValidation.error) {
+    return new NextResponse(rawValidation.error, { status: 400 });
+  }
+
+  const newValidation: NewValidation = {
+    url,
+    blinkInfo: rawValidation.blinks_info,
+    frameCount: rawValidation.frame_count,
+    frameRate: rawValidation.frame_rate,
   };
+
+  const newTags: NewTags = rawValidation.tags.map((tag) => ({
+    type: tag.type,
+    count: tag.count,
+    times: tag.times,
+  }));
 
   const session = await getSession();
 
   if (session) {
     const validation = await prisma.validation.create({
       data: {
-        video: url,
+        ...newValidation,
         user: {
           connect: {
             id: session.user.id,
@@ -35,7 +60,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       },
     });
 
-    for (const tag of tags) {
+    for (const tag of newTags) {
       await prisma.tag.create({
         data: {
           ...tag,
@@ -51,5 +76,5 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ validation });
   }
 
-  return NextResponse.json({ tags });
+  return NextResponse.json({ newValidation });
 }

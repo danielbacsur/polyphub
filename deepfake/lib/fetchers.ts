@@ -12,7 +12,7 @@ export async function getUser(): Promise<User> {
 }
 
 export async function getValidations(
-  id: string
+  id: string,
 ): Promise<(Validation & { tags: Tag[] })[]> {
   const validations = await prisma.validation.findMany({
     where: {

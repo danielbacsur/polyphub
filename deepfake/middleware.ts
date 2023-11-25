@@ -12,13 +12,13 @@ if (!process.env.NEXT_PUBLIC_TEST_DOMAIN) {
 export default async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const path = url.pathname;
-  
+
   // Replace test domain with root domain in the hostname
   const hostname = request.headers
     .get("host")!
     .replace(
       `.${process.env.NEXT_PUBLIC_TEST_DOMAIN}`,
-      `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
+      `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`,
     );
 
   // Redirect logic for requests from 'app' subdomain
@@ -28,7 +28,7 @@ export default async function middleware(request: NextRequest) {
     // Redirect to login if no token and not on login page
     if (!token && path !== "/login") {
       return NextResponse.redirect(new URL("/login", request.url));
-    } 
+    }
 
     // Redirect to home if already logged in and on login page
     else if (token && path === "/login") {
@@ -37,7 +37,7 @@ export default async function middleware(request: NextRequest) {
 
     // Rewrite URL to point to '/app' path
     return NextResponse.rewrite(
-      new URL(`/app${path === "/" ? "" : path}`, request.url)
+      new URL(`/app${path === "/" ? "" : path}`, request.url),
     );
   }
 
