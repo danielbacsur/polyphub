@@ -25,6 +25,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     },
     include: {
       tags: true,
+      metadata: true,
     },
     orderBy: {
       createdAt: "desc",

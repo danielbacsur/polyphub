@@ -12,7 +12,7 @@ import {
 import { useValidation } from "@/lib/hooks/use-validation";
 
 export default function OverviewPage() {
-  const validation = useValidation();
+  // const validation = useValidation();
 
   return (
     <div className="h-full flex flex-col">
@@ -21,7 +21,7 @@ export default function OverviewPage() {
           {/* <video className="h-max-full rounded-lg" src={validation.video} controls /> */}
         </div>
       </div>
-      <div className="p-4">
+      {/* <div className="p-4">
         <Table>
           <TableCaption>
             These are the tags that were detected in your video.
@@ -43,7 +43,7 @@ export default function OverviewPage() {
                 <TableCell className="px-0 relative border-x">
                   {tag.times.map((time) => {
                     const left = `${
-                      (time / (validation.frameCount / validation.frameRate)) *
+                      (time / (validation.metadata?.duration)) *
                       100
                     }%`;
 
@@ -63,7 +63,7 @@ export default function OverviewPage() {
             ))}
           </TableBody>
         </Table>
-      </div>
+      </div> */}
     </div>
   );
 }

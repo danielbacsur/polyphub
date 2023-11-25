@@ -2,6 +2,7 @@ import { Validation, type User, Tag } from "@prisma/client";
 import { getSession } from "@/lib/utils/auth";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/clients/prisma";
+import { EValidation } from "./types/prisma";
 
 export async function getUser(): Promise<User> {
   const session = await getSession();
@@ -13,7 +14,7 @@ export async function getUser(): Promise<User> {
 
 export async function getValidations(
   id: string,
-): Promise<(Validation & { tags: Tag[] })[]> {
+): Promise<EValidation[]> {
   const validations = await prisma.validation.findMany({
     where: {
       user: {
@@ -22,6 +23,7 @@ export async function getValidations(
     },
     include: {
       tags: true,
+      metadata: true,
     },
   });
   return validations || notFound();
