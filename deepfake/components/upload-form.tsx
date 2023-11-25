@@ -1,10 +1,10 @@
 "use client";
 
 import { createValidation, submitValidation } from "@/lib/actions/validation";
+import { useRef, type FormEvent } from "react";
 import { useUser } from "@/lib/hooks/use-user";
 import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
-import { useRef, type FormEvent } from "react";
 import { toast } from "sonner";
 
 export function UploadForm() {
@@ -42,9 +42,6 @@ export function UploadForm() {
       toast.error("Something went wrong");
       return;
     }
-
-    toast.error(validation.id);
-
 
     router.push("/overview");
   };
