@@ -114,4 +114,6 @@ model Tag {
 
   validation   Validation @relation(fields: [validationId], references: [id])
   validationId String
+
+  @@unique([validationId, type])
 }

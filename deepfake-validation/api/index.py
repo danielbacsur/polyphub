@@ -5,7 +5,7 @@ from utils import *
 import requests
 
 
-def analyze_video( url: str) -> int:
+def analyze_video( url: str, upsert_tag_callback: str) -> int:
     video_path = download_video(url)
     frames, frame_rate = extract_frames(video_path)
 
@@ -27,6 +27,13 @@ def analyze_video( url: str) -> int:
         "times": frame_inconsistencies,
     }
 
+
+    response = requests.post(upsert_tag_callback, json=frame_inconsistencies_tag)
+    print(f"Response from {upsert_tag_callback}: {response.status_code}")
+
+
+
+
     # Check for face count inconsistencies
     face_inconsistencies = check_face_consistency(frames, frame_rate, face_detector)
     if len(face_inconsistencies) > 0:
@@ -41,6 +48,14 @@ def analyze_video( url: str) -> int:
         "times": face_inconsistencies,
     }
 
+
+
+    response = requests.post(upsert_tag_callback, json=face_inconsistencies_tag)
+    print(f"Response from {upsert_tag_callback}: {response.status_code}")
+
+
+
+
     # Check for brightness and contrast inconsistencies
     brightness_contrast_inconsistencies = check_brightness_contrast_consistency(frames, frame_rate)
     if len(brightness_contrast_inconsistencies) > 0:
@@ -54,6 +69,14 @@ def analyze_video( url: str) -> int:
         "count": len(brightness_contrast_inconsistencies),
         "times": brightness_contrast_inconsistencies,
     }
+
+
+    response = requests.post(upsert_tag_callback, json=brightness_contrast_inconsistencies_tag)
+    print(f"Response from {upsert_tag_callback}: {response.status_code}")
+
+
+
+
 
     # Check for blinks
     blink_frames = detect_blinks(frames, frame_rate, face_detector)
@@ -72,6 +95,14 @@ def analyze_video( url: str) -> int:
         "count": len(blink_frames),
         "times": blink_frames,
     }
+
+
+
+    response = requests.post(upsert_tag_callback, json=blinks_tag)
+    print(f"Response from {upsert_tag_callback}: {response.status_code}")
+
+
+
     
     print("Blinks:", len(blink_frames))
 
@@ -85,6 +116,16 @@ def analyze_video( url: str) -> int:
         "count": len(blur_failed_frames),
         "times": blur_failed_frames,
     }
+
+
+
+    response = requests.post(upsert_tag_callback, json=blur_tag)
+    print(f"Response from {upsert_tag_callback}: {response.status_code}")
+
+
+
+
+
 
     # Probability calculation based on metrics
     probability = 0.0
@@ -131,17 +172,17 @@ def analyze_video( url: str) -> int:
 
 app = Flask(__name__)
 
-def timed_process(url: str, callback: str):
+def timed_process(url: str, finalize_callback: str, upsert_tag_callback: str):
 
     print("Analizing", url)
 
-    analization = analyze_video(url)
+    analization = analyze_video(url, upsert_tag_callback)
 
-    print("Posting to", callback)
+    print("Posting to", finalize_callback)
     
     try:
-        response = requests.post(callback, json=analization)
-        print(f"Response from {callback}: {response.status_code}")
+        response = requests.post(finalize_callback, json=analization)
+        print(f"Response from {finalize_callback}: {response.status_code}")
     except Exception as e:
         print(f"Error during request: {e}")
 
@@ -150,9 +191,10 @@ def timed_process(url: str, callback: str):
 @app.route('/validate', methods=['POST'])
 def validate():
     url = request.json['url']
-    callback = request.json['callback']
+    finalize_callback = request.json['finalizeCallback']
+    upsert_tag_callback = request.json['upsertTagCallback']
     
-    process = multiprocessing.Process(target=timed_process, args=(url, callback))
+    process = multiprocessing.Process(target=timed_process, args=(url, finalize_callback, upsert_tag_callback))
     process.start()
 
     return "Success", 200

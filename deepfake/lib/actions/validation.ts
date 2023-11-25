@@ -21,7 +21,8 @@ export async function createValidation(
 }
 
 export async function submitValidation({ id, url }: Validation) {
-  const callback = `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/api/validation/${id}/finalize`;
+  const finalizeCallback = `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/api/validation/${id}/finalize`;
+  const upsertTagCallback = `http://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/api/validation/${id}/upsert/tag`;
 
   const response = await fetch(
     `http://${process.env.VALIDATION_API_ADDRESS}/validate`,
@@ -30,7 +31,8 @@ export async function submitValidation({ id, url }: Validation) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         url,
-        callback,
+        finalizeCallback,
+        upsertTagCallback,
       }),
     }
   );
