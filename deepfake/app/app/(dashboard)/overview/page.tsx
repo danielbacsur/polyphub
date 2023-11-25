@@ -25,20 +25,23 @@ export default function OverviewPage() {
     setValidation(response);
   };
 
-
   useEffect(() => {
     const interval = setInterval(() => {
       update();
 
-      if (validation.status === 'completed') {
+      if (validation.status === "completed") {
         clearInterval(interval);
       }
-    }, 2000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [validation]);
 
-  return <>{validation.id} - {validation.status}</>;
+  return (
+    <>
+      {validation.id} - {validation.status}
+    </>
+  );
 
   return (
     <div className="h-full flex flex-col">
