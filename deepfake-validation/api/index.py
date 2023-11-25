@@ -21,6 +21,12 @@ def analyze_video( url: str) -> int:
     else:
         print("No frame inconsistencies found")
 
+    frame_inconsistencies_tag = {
+        "type": "frame_inconsistencies",
+        "count": len(frame_inconsistencies),
+        "times": frame_inconsistencies,
+    }
+
     # Check for face count inconsistencies
     face_inconsistencies = check_face_consistency(frames, frame_rate, face_detector)
     if len(face_inconsistencies) > 0:
@@ -29,6 +35,12 @@ def analyze_video( url: str) -> int:
     else:
         print("No face inconsistencies found")
 
+    face_inconsistencies_tag = {
+        "type": "face_inconsistencies",
+        "count": len(face_inconsistencies),
+        "times": face_inconsistencies,
+    }
+
     # Check for brightness and contrast inconsistencies
     brightness_contrast_inconsistencies = check_brightness_contrast_consistency(frames, frame_rate)
     if len(brightness_contrast_inconsistencies) > 0:
@@ -36,6 +48,12 @@ def analyze_video( url: str) -> int:
         print(brightness_contrast_inconsistencies)
     else:
         print("No brightness and contrast inconsistencies found")
+
+    brightness_contrast_inconsistencies_tag = {
+        "type": "brightness_contrast_inconsistencies",
+        "count": len(brightness_contrast_inconsistencies),
+        "times": brightness_contrast_inconsistencies,
+    }
 
     # Check for blinks
     blink_frames = detect_blinks(frames, frame_rate, face_detector)
@@ -48,6 +66,12 @@ def analyze_video( url: str) -> int:
         blink_error_type = "too-many-blinks"
     else:
         print("No blink inconsistencies found")
+
+    blinks_tag = {
+        "type": "blinks",
+        "count": len(blink_frames),
+        "times": blink_frames,
+    }
     
     print("Blinks:", len(blink_frames))
 
@@ -55,6 +79,12 @@ def analyze_video( url: str) -> int:
     blur_failed_frames = validate_blur(frames, frame_rate, face_detector)
     if len(blur_failed_frames) > 0:
         print("Found blur inconsistencies")
+
+    blur_tag = {
+        "type": "blur",
+        "count": len(blur_failed_frames),
+        "times": blur_failed_frames,
+    }
 
     # Probability calculation based on metrics
     probability = 0.0
@@ -86,31 +116,11 @@ def analyze_video( url: str) -> int:
     
     return {
         "tags": [
-            {
-                "type": "frame_inconsistencies",
-                "count": len(frame_inconsistencies),
-                "times": frame_inconsistencies,
-            },
-            {
-                "type": "face_inconsistencies",
-                "count": len(face_inconsistencies),
-                "times": face_inconsistencies,
-            },
-            {
-                "type": "brightness_contrast_inconsistencies",
-                "count": len(brightness_contrast_inconsistencies),
-                "times": brightness_contrast_inconsistencies,
-            },
-            {
-                "type": "blinks",
-                "count": len(blink_frames),
-                "times": blink_frames,
-            },
-            {
-                "type": "blur",
-                "count": len(blur_failed_frames),
-                "times": blur_failed_frames,
-            }
+            frame_inconsistencies_tag,
+            face_inconsistencies_tag,
+            brightness_contrast_inconsistencies_tag,
+            blinks_tag,
+            blur_tag
         ],
         "length": len(frames),
         "framerate": frame_rate,
