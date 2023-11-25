@@ -43,7 +43,7 @@ export default function OverviewPage() {
                 <TableCell className="px-0 relative border-x">
                   {tag.times.map((time) => {
                     const left = `${
-                      (time / validation.frameCount / validation.frameRate) *
+                      (time / (validation.frameCount / validation.frameRate)) *
                       100
                     }%`;
 
