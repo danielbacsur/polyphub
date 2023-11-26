@@ -28,14 +28,16 @@ export default function Home() {
 
             <p className="w-96">
               <Balancer>
-                Ever watched a video and wondered if it&apos;s a celebrity or their
-                digital twin speaking?
+                Ever watched a video and wondered if it&apos;s a celebrity or
+                their digital twin speaking?
               </Balancer>
             </p>
 
-            <Link href="https://app.polyphub.hu/">
-              <Button>Start The Experience</Button>
-            </Link>
+            <Button asChild>
+              <Link href="https://app.polyphub.hu/" >
+                Start The Experience
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState, useCallback, useMemo, ChangeEvent } from "react";
 import { LoadingDots } from "./loading-dots";
+import { Button } from "./ui/button";
 
 // export function UploadForm() {
 // const inputFileRef = useRef<HTMLInputElement>(null);
@@ -212,7 +213,7 @@ export function UploadForm() {
           </div>
           {file && (
             <p className="mt-2 text-center text-sm text-gray-500">
-              Successfully uploaded {file.name}
+              Successfully selected {file.name}
             </p>
           )}
         </label>
@@ -228,20 +229,14 @@ export function UploadForm() {
         </div>
       </div>
 
-      <button
-        disabled={saveDisabled}
-        className={`${
-          saveDisabled
-            ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
-            : "border-black bg-black text-white hover:bg-white hover:text-black"
-        } flex h-10 w-full items-center justify-center rounded-md border text-sm transition-all focus:outline-none`}
-      >
-        {saving ? (
-          <LoadingDots color="#808080" />
+      <Button disabled={saveDisabled} type="submit">
+        {saveDisabled ? (
+          <p>Select a video to get started</p>
         ) : (
-          <p className="text-sm">Confirm upload</p>
+          <p>Upload video</p>
         )}
-      </button>
+      </Button>
+
     </form>
   );
 }

@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginLayout({ children }: { children: ReactNode }) {
-  return <div className="grid h-full place-items-center">{children}</div>;
+  return <div className="h-full grid place-items-center p-12">{children}</div>;
 }

@@ -12,20 +12,20 @@ export default async function WorkspacesPage() {
         </div>
       </div>
 
-      <div className="flex-1 grid place-items-center">
+      <div className="flex-1 grid place-items-center p-12">
         <div className="flex flex-col space-y-4 lg:space-y-8 text-center">
           <h1 className="text-2xl lg:text-3xl font-bold">Deepfake</h1>
 
-            <Balancer className=" max-w-lg">
-              On mobile, use our exclusive head movement authentication for
-              deepfake detection. On desktop, upload and analyze videos for
-              deepfake checking. Secure your digital identity seamlessly with
-              PolypHUB, regardless of your device!
-            </Balancer>
+          <Balancer className="max-w-lg">
+            On mobile, use our exclusive head movement authentication for
+            deepfake detection. On desktop, upload and analyze videos for
+            deepfake checking. Secure your digital identity seamlessly with
+            Polyp HUB, regardless of your device!
+          </Balancer>
 
-          <Link href="https://app.polyphub.hu/interview">
-            <Button>Try Our Method</Button>
-          </Link>
+          <Button asChild>
+            <Link href="/interview">Try Our Method</Link>
+          </Button>
         </div>
       </div>
     </div>
