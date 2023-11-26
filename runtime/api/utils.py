@@ -288,7 +288,7 @@ def validate_blur(frames: List[np.ndarray], frame_rate: int, face_detector: Dlib
         
         blur_new = check_blur(image_cropped)
 
-        if abs(blur_new - blur_baseline) > 45:
+        if abs(blur_new - blur_baseline) > 55:
             blur_failed_frames.append(frame_idx / frame_rate)
 
     return blur_failed_frames
