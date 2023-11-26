@@ -1,20 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import {
   FaceLandmarker,
   FaceLandmarkerOptions,
   FilesetResolver,
 } from "@mediapipe/tasks-vision";
-import { Color, Euler, Matrix4 } from "three";
-import { Canvas, useFrame, useGraph } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
-
-let faceLandmarker: FaceLandmarker;
-let lastVideoTime = -1;
-let blendshapes: any[] = [];
-let rotation: Euler;
-let headMesh: any[] = [];
+import { ClockComponent } from "@/components/interview-clock";
+import { VideoRecorder } from "@/components/video-recorder";
+import { useEffect, useRef, useState } from "react";
+import { model } from "@/lib/utils/interview";
+import { Canvas } from "@react-three/fiber";
+import Avatar from "@/components/avatar";
+import * as THREE from "three";
 
 const options: FaceLandmarkerOptions = {
   baseOptions: {
@@ -27,56 +24,18 @@ const options: FaceLandmarkerOptions = {
   outputFacialTransformationMatrixes: true,
 };
 
-function Avatar({ url }: { url: string }) {
-  const { scene } = useGLTF(url);
-  const { nodes } = useGraph(scene);
-
-  useEffect(() => {
-    if (nodes.Wolf3D_Head) headMesh.push(nodes.Wolf3D_Head);
-    if (nodes.Wolf3D_Teeth) headMesh.push(nodes.Wolf3D_Teeth);
-    if (nodes.Wolf3D_Beard) headMesh.push(nodes.Wolf3D_Beard);
-    if (nodes.Wolf3D_Avatar) headMesh.push(nodes.Wolf3D_Avatar);
-    if (nodes.Wolf3D_Head_Custom) headMesh.push(nodes.Wolf3D_Head_Custom);
-  }, [nodes, url]);
-
-  useFrame(() => {
-    if (blendshapes.length > 0) {
-      blendshapes.forEach((element) => {
-        headMesh.forEach((mesh) => {
-          let index = mesh.morphTargetDictionary[element.categoryName];
-          if (index >= 0) {
-            mesh.morphTargetInfluences[index] = element.score;
-          }
-        });
-      });
-
-      nodes.Head.rotation.set(rotation.x, rotation.y, rotation.z);
-      nodes.Neck.rotation.set(
-        rotation.x / 5 + 0.3,
-        rotation.y / 5,
-        rotation.z / 5
-      );
-      nodes.Spine2.rotation.set(
-        rotation.x / 10,
-        rotation.y / 10,
-        rotation.z / 10
-      );
-    }
-  });
-
-  return <primitive object={scene} position={[0, -1.75, 3]} />;
-}
-
-function App() {
-  const [url, setUrl] = useState<string>(
-    "https://models.readyplayer.me/6460d95f9ae10f45bffb2864.glb?morphTargets=ARKit&textureAtlas=1024"
-  );
+export default function InterviewPage() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const faceLandmarkerRef = useRef<FaceLandmarker>();
+  const blendshapesRef = useRef<any[]>([]);
+  const lastVideoTimeRef = useRef<number>(-1);
+  const [rotation, setRotation] = useState<THREE.Euler>(new THREE.Euler());
 
   const setup = async () => {
     const filesetResolver = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
     );
-    faceLandmarker = await FaceLandmarker.createFromOptions(
+    faceLandmarkerRef.current = await FaceLandmarker.createFromOptions(
       filesetResolver,
       options
     );
@@ -93,25 +52,30 @@ function App() {
   };
 
   const predict = async () => {
-    let nowInMs = Date.now();
-    if (videoRef.current && lastVideoTime !== videoRef.current.currentTime) {
-      lastVideoTime = videoRef.current.currentTime;
-      const faceLandmarkerResult = faceLandmarker.detectForVideo(
+    if (
+      videoRef.current &&
+      lastVideoTimeRef.current !== videoRef.current.currentTime
+    ) {
+      lastVideoTimeRef.current = videoRef.current.currentTime;
+      const faceLandmarkerResult = faceLandmarkerRef.current?.detectForVideo(
         videoRef.current,
-        nowInMs
+        Date.now()
       );
 
       if (
+        faceLandmarkerResult &&
         faceLandmarkerResult.faceBlendshapes &&
         faceLandmarkerResult.faceBlendshapes.length > 0 &&
         faceLandmarkerResult.faceBlendshapes[0].categories
       ) {
-        blendshapes = faceLandmarkerResult.faceBlendshapes[0].categories;
+        blendshapesRef.current =
+          faceLandmarkerResult.faceBlendshapes[0].categories;
 
-        const matrix = new Matrix4().fromArray(
+        const matrix = new THREE.Matrix4().fromArray(
           faceLandmarkerResult.facialTransformationMatrixes![0].data
         );
-        rotation = new Euler().setFromRotationMatrix(matrix);
+
+        setRotation(new THREE.Euler().setFromRotationMatrix(matrix));
       }
     }
 
@@ -122,47 +86,41 @@ function App() {
     setup();
   }, []);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-
   return (
     <>
-      <div className="absolute top-0 left-0 w-full h-full bg-red-500 -z-[998]" />
-      <video
-        className="absolute w-full h-auto -z-[999]"
-        ref={videoRef}
-        loop
-        muted
-        autoPlay
-        playsInline
-      />
+      <VideoRecorder videoRef={videoRef} />
 
-      <div className="h-full grid place-items-center bg-green-300">
-        <div className="w-[60vw] h-[60vw] rounded-full bg-yellow-200 overflow-hidden">
+      <ClockComponent rotation={rotation} />
+
+      <div className="h-full grid place-items-center">
+        <div className="w-[60vw] h-[60vw] rounded-full overflow-hidden">
           <Canvas
-            style={{ backgroundColor: "blue", position: "relative" }}
-            camera={{ fov: 25, position: [0, -0.1, 4.2] }}
+            style={{ position: "relative" }}
+            camera={{ fov: 25, position: [0, -0.1, 1.2] }}
             shadows
           >
             <ambientLight intensity={0.6} />
             <pointLight
               position={[10, 10, 10]}
-              color={new Color(1, 1, 0)}
+              color={new THREE.Color(1, 1, 0)}
               intensity={120}
               castShadow
             />
             <pointLight
               position={[-10, 0, 10]}
-              color={new Color(1, 0, 0)}
+              color={new THREE.Color(1, 0, 0)}
               intensity={160}
               castShadow
             />
             <pointLight position={[0, 0, 10]} intensity={60} castShadow />
-            <Avatar url={url} />
+            <Avatar
+              url={model}
+              blendshapesRef={blendshapesRef}
+              rotation={rotation}
+            />
           </Canvas>
         </div>
       </div>
     </>
   );
 }
-
-export default App;
