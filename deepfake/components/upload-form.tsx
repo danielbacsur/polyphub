@@ -112,8 +112,8 @@ export function UploadForm() {
     (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.currentTarget.files && event.currentTarget.files[0];
       if (file) {
-        if (file.size / 1024 / 1024 > 50) {
-          toast.error("File size too big (max 50MB)");
+        if (file.size / 1024 / 1024 > 5) {
+          toast.error("File size too big (max 5MB)");
         } else {
           setFile(file);
           const reader = new FileReader();
@@ -165,7 +165,7 @@ export function UploadForm() {
               const file = e.dataTransfer.files && e.dataTransfer.files[0];
               if (file) {
                 if (file.size / 1024 / 1024 > 50) {
-                  toast.error("File size too big (max 50MB)");
+                  toast.error("File size too big (max 5MB)");
                 } else {
                   setFile(file);
                   const reader = new FileReader();
