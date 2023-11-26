@@ -114,7 +114,7 @@ def analyze_video( url: str, upsert_tag_callback: str, upsert_metadata_callback:
     # Weight factors for each metric
     weight_frame_inconsistencies = 0.2
     weight_blink_inconsistencies = 0.4
-    weight_blur_failures = 4
+    weight_blur_failures = 2
 
     total_frames = len(frames)
 
