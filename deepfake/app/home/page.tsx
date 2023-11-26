@@ -22,7 +22,7 @@ export default function Home() {
             height={300}
           />
         </div>
-        <div className="flex-1 grid place-items-center">
+        <div className="flex-1 grid place-items-center p-12">
           <div className="flex flex-col space-y-4 lg:space-y-8 text-center">
             <h1 className="text-2xl lg:text-3xl font-bold">Deepfake</h1>
 
