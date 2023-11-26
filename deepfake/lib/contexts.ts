@@ -13,5 +13,5 @@ export type ValidationContextType = {
 };
 
 export const ValidationContext = createContext<ValidationContextType | null>(
-  null
+  null,
 );

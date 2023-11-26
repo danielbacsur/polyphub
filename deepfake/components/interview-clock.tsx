@@ -19,7 +19,7 @@ export function ClockComponent({ rotation }: { rotation: THREE.Euler }) {
       x: 0,
       y: 0,
       status: false,
-    }))
+    })),
   );
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export function ClockComponent({ rotation }: { rotation: THREE.Euler }) {
         const x = radius * Math.cos(angle);
         const y = -radius * Math.sin(angle);
         return { ...p, x, y };
-      })
+      }),
     );
   }, []);
 
@@ -55,7 +55,7 @@ export function ClockComponent({ rotation }: { rotation: THREE.Euler }) {
             return { ...point, status: true };
           }
           return point;
-        })
+        }),
       );
     }
   }, [rotation]);

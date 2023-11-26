@@ -3,7 +3,7 @@ import { prisma } from "@/lib/clients/prisma";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const id = decodeURIComponent(params.id);
 

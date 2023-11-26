@@ -5,7 +5,7 @@ import { prisma } from "@/lib/clients/prisma";
 
 export async function createValidation(
   user: User,
-  url: string
+  url: string,
 ): Promise<Validation> {
   return await prisma.validation.create({
     data: {
@@ -37,9 +37,9 @@ export async function submitValidation({ id, url }: Validation) {
         url,
         finalizeCallback,
         upsertTagCallback,
-        upsertMetadataCallback
+        upsertMetadataCallback,
       }),
-    }
+    },
   );
 
   return response.ok;

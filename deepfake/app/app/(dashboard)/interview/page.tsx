@@ -33,11 +33,11 @@ export default function InterviewPage() {
 
   const setup = async () => {
     const filesetResolver = await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm",
     );
     faceLandmarkerRef.current = await FaceLandmarker.createFromOptions(
       filesetResolver,
-      options
+      options,
     );
 
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -59,7 +59,7 @@ export default function InterviewPage() {
       lastVideoTimeRef.current = videoRef.current.currentTime;
       const faceLandmarkerResult = faceLandmarkerRef.current?.detectForVideo(
         videoRef.current,
-        Date.now()
+        Date.now(),
       );
 
       if (
@@ -72,7 +72,7 @@ export default function InterviewPage() {
           faceLandmarkerResult.faceBlendshapes[0].categories;
 
         const matrix = new THREE.Matrix4().fromArray(
-          faceLandmarkerResult.facialTransformationMatrixes![0].data
+          faceLandmarkerResult.facialTransformationMatrixes![0].data,
         );
 
         setRotation(new THREE.Euler().setFromRotationMatrix(matrix));

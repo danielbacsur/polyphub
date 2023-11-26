@@ -38,12 +38,12 @@ const Avatar: React.FC<AvatarProps> = ({ url, blendshapesRef, rotation }) => {
       nodes.Neck.rotation.set(
         rotation.x / 5 + 0.3,
         rotation.y / 5,
-        rotation.z / 5
+        rotation.z / 5,
       );
       nodes.Spine2.rotation.set(
         rotation.x / 10,
         rotation.y / 10,
-        rotation.z / 10
+        rotation.z / 10,
       );
     }
   });

@@ -117,7 +117,7 @@ export function UploadForm() {
         }
       }
     },
-    [setData]
+    [setData],
   );
 
   const [saving, setSaving] = useState(false);
@@ -129,7 +129,6 @@ export function UploadForm() {
   return (
     <form className="grid gap-6" onSubmit={onSubmit}>
       <div className="w-[28vw]">
-       
         <label
           htmlFor="image-upload"
           className="group relative mt-2 flex h-72 cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
@@ -201,7 +200,7 @@ export function UploadForm() {
               <path d="M12 12v9"></path>
               <path d="m16 16-4-4-4 4"></path>
             </svg>
-          <h2 className="text-xl pt-2 font-semibold">Upload a file</h2>
+            <h2 className="text-xl pt-2 font-semibold">Upload a file</h2>
 
             <p className="mt-2 text-center text-sm text-gray-500">
               Drag and drop or click to upload.
@@ -212,9 +211,9 @@ export function UploadForm() {
             <span className="sr-only">Photo upload</span>
           </div>
           {file && (
-           <p className="mt-2 text-center text-sm text-gray-500">
-           Successfully uploaded {file.name}
-         </p>
+            <p className="mt-2 text-center text-sm text-gray-500">
+              Successfully uploaded {file.name}
+            </p>
           )}
         </label>
         <div className="mt-1 flex rounded-md shadow-sm">

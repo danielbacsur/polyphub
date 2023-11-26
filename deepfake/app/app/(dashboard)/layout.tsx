@@ -10,6 +10,6 @@ export const metadata: Metadata = {
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getUser();
-  
+
   return <UserProvider user={user}>{children}</UserProvider>;
 }

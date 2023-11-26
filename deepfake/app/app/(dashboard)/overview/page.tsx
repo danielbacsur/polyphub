@@ -114,7 +114,7 @@ export default function OverviewPage() {
                         const left = getTimelinePercent(
                           time,
                           validation,
-                          tag.times
+                          tag.times,
                         );
 
                         return (
@@ -140,7 +140,7 @@ export default function OverviewPage() {
 function getTimelinePercent(
   time: number,
   validation: Validation,
-  times: number[]
+  times: number[],
 ) {
   const a = validation.metadata?.duration;
   const b = times.reduce((max, time) => Math.max(max, time), 0);
