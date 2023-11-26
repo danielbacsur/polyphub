@@ -23,7 +23,7 @@ export default async function WorkspacesPage() {
               PolypHUB, regardless of your device!
             </Balancer>
 
-          <Link href="https://app.polyphub.hu/">
+          <Link href="https://app.polyphub.hu/interview">
             <Button>Try Our Method</Button>
           </Link>
         </div>
