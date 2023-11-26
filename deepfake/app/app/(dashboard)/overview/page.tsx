@@ -6,6 +6,9 @@ import { type Validation } from "@/lib/types/prisma";
 import * as Table from "@/components/ui/table";
 import { useEffect, useRef } from "react";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function OverviewPage() {
   const { validation, setValidation } = useValidation();
@@ -39,21 +42,37 @@ export default function OverviewPage() {
       <div className="grid lg:hidden h-full place-items-center">
         Sorry you screen is too small.
       </div>
+
+      <div className="absolute top-0 left-0">
+        <Image
+          className="w-auto"
+          src="/logo.png"
+          alt="Polyphub logo"
+          width={120}
+          height={120}
+        />
+      </div>
+
       <div className="hidden lg:flex h-full flex-col">
         <div className="flex-grow flex p-4 -mb-4 space-x-4">
-          <div className="flex-none h-full w-[calc(40vw_-_1rem)] rounded-lg grid place-items-center">
-            <div className="w-full flex flex-col items-center space-y-8">
-              <h1 className="text-3xl font-bold">Probability</h1>
+          <div className="flex-none h-full w-[calc(40vw_-_1rem)] rounded-lg flex flex-col justify-between">
+            <div className="w-full grid flex-grow place-items-center">
+              <div className="w-full flex flex-col items-center space-y-4">
+                <h1 className="text-3xl font-bold">Probability</h1>
 
-              <Progress
-                value={(validation.metadata?.probability || 0) * 100}
-                className="w-[60%] h-4"
-              />
+                <Progress
+                  value={(validation.metadata?.probability || 0) * 100}
+                  className="w-[60%] h-4"
+                />
 
-              <h1 className="text-3xl font-bold">{`${(
-                (validation.metadata?.probability || 0) * 100
-              ).toFixed()} %`}</h1>
+                <h1 className="text-3xl font-bold">{`${(
+                  (validation.metadata?.probability || 0) * 100
+                ).toFixed()} %`}</h1>
+              </div>
             </div>
+            <Button asChild>
+              <Link href="https://app.polyphub.hu/">Go Back</Link>
+            </Button>
           </div>
           <div className="flex-grow bg-black w-full h-full rounded-lg relative overflow-hidden">
             <video
@@ -114,7 +133,7 @@ export default function OverviewPage() {
                         const left = getTimelinePercent(
                           time,
                           validation,
-                          tag.times,
+                          tag.times
                         );
 
                         return (
@@ -140,7 +159,7 @@ export default function OverviewPage() {
 function getTimelinePercent(
   time: number,
   validation: Validation,
-  times: number[],
+  times: number[]
 ) {
   const a = validation.metadata?.duration;
   const b = times.reduce((max, time) => Math.max(max, time), 0);
