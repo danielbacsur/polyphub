@@ -75,6 +75,8 @@ export function UploadForm() {
   const onSubmit = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
+    setSaving(true);
+
     if (!file) {
       toast.error("You need to upload a file");
       return;
