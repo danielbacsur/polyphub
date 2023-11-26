@@ -9,6 +9,7 @@ import { type Point } from "@/lib/types/interview";
 import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { useRouter } from "next/navigation";
+import { track } from "@vercel/analytics";
 
 export function ClockComponent({ rotation }: { rotation: THREE.Euler }) {
   const router = useRouter();
@@ -37,6 +38,8 @@ export function ClockComponent({ rotation }: { rotation: THREE.Euler }) {
 
   useEffect(() => {
     if (points.every((p) => p.status)) {
+
+      track("interview-completed")
       router.push("https://polyphub.hu/");
     }
   }, [points]);

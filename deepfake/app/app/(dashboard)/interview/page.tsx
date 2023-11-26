@@ -12,6 +12,7 @@ import { model } from "@/lib/utils/interview";
 import { Canvas } from "@react-three/fiber";
 import Avatar from "@/components/avatar";
 import * as THREE from "three";
+import { track } from "@vercel/analytics";
 
 const options: FaceLandmarkerOptions = {
   baseOptions: {
@@ -83,6 +84,8 @@ export default function InterviewPage() {
   };
 
   useEffect(() => {
+    track("interview-strated")
+    
     setup();
   }, []);
 

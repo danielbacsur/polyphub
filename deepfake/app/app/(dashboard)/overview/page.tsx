@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 
 export default function OverviewPage() {
   const { validation, setValidation } = useValidation();
@@ -22,6 +23,8 @@ export default function OverviewPage() {
   };
 
   useEffect(() => {
+    track("overview-started");
+
     interval.current = setInterval(() => {
       update();
     }, 4000);
@@ -33,6 +36,8 @@ export default function OverviewPage() {
 
   useEffect(() => {
     if (validation?.status === "complete" && interval.current) {
+      track("overview-finished");
+
       clearInterval(interval.current);
     }
   }, [validation]);

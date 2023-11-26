@@ -1,3 +1,4 @@
+import { track } from "@vercel/analytics";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 
@@ -17,7 +18,9 @@ export async function POST(request: Request): Promise<NextResponse> {
           "video/x-msvideo",
         ],
       }),
-      onUploadCompleted: async () => {},
+      onUploadCompleted: async () => {
+        track("video-upload-completed");
+      },
     });
 
     return NextResponse.json(response);

@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/clients/prisma";
+import { track } from "@vercel/analytics";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: { id: string } }
 ) {
   const id = decodeURIComponent(params.id);
 
@@ -60,6 +61,8 @@ export async function POST(
       },
     },
   });
+
+  track("validation-finalized");
 
   return NextResponse.json({ id });
 }
