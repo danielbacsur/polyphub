@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useState, useCallback, useMemo, ChangeEvent } from "react";
 import { LoadingDots } from "./loading-dots";
 import { Button } from "./ui/button";
+import { track } from "@vercel/analytics";
 
 // export function UploadForm() {
 // const inputFileRef = useRef<HTMLInputElement>(null);
@@ -86,6 +87,11 @@ export function UploadForm() {
       handleUploadUrl: "/api/upload",
     });
 
+    track("blob-upload", {
+      user: user.name,
+      url,
+    });
+
     toast.loading("Creating validation");
 
     const validation = await createValidation(user, url);
@@ -118,7 +124,7 @@ export function UploadForm() {
         }
       }
     },
-    [setData],
+    [setData]
   );
 
   const [saving, setSaving] = useState(false);
@@ -236,7 +242,6 @@ export function UploadForm() {
           <p>Upload video</p>
         )}
       </Button>
-
     </form>
   );
 }
