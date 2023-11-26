@@ -48,7 +48,7 @@ export function ClockComponent({ rotation }: { rotation: THREE.Euler }) {
 
     const rounded = roundAngle(vector2.angle() * (180 / Math.PI));
 
-    if (0.4 < vector2.length()) {
+    if (0.3 < vector2.length()) {
       setPoints((points) =>
         points.map((point) => {
           if (point.id === rounded) {
