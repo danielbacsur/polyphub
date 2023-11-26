@@ -131,6 +131,11 @@ def analyze_video( url: str, upsert_tag_callback: str, upsert_metadata_callback:
     if blur_failure_ratio > 0.1:  # Assuming more than 10% blur failures is significant
         probability += weight_blur_failures * blur_failure_ratio
 
+    # Adjust probability based on face inconsistencies
+    face_inconsistency_ratio = len(face_inconsistencies) / total_frames
+    if face_inconsistency_ratio > 0.1:  # Assuming more than 10% face inconsistencies is significant
+        probability += face_inconsistency_ratio / 0.1
+
     # Normalize probability to be within 0 to 1
     probability = np.clip(probability, 0, 1)
 
