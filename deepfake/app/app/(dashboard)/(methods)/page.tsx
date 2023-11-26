@@ -1,5 +1,6 @@
 import { UploadForm } from "@/components/upload-form";
 import { Button } from "@/components/ui/button";
+import Balancer from "react-wrap-balancer";
 import Link from "next/link";
 
 export default async function WorkspacesPage() {
@@ -10,10 +11,20 @@ export default async function WorkspacesPage() {
           <UploadForm />
         </div>
       </div>
+
       <div className="flex-1 grid place-items-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Link href="/interview">
-            <Button size="lg">TRY OUT OUR METHOD</Button>
+        <div className="flex flex-col space-y-4 lg:space-y-8 text-center">
+          <h1 className="text-2xl lg:text-3xl font-bold">Deepfake</h1>
+
+            <Balancer className=" max-w-lg">
+              On mobile, use our exclusive head movement authentication for
+              deepfake detection. On desktop, upload and analyze videos for
+              deepfake checking. Secure your digital identity seamlessly with
+              PolypHUB, regardless of your device!
+            </Balancer>
+
+          <Link href="https://app.polyphub.hu/">
+            <Button>Try Our Method</Button>
           </Link>
         </div>
       </div>
